@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://bj7thskyggr24"]
+
+[ext_resource type="Script" uid="uid://bysnfjhkwbabv" path="res://src/battle/hand.gd" id="1_m66t7"]
+
+[node name="Hand" type="Control" unique_id=285407176]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 307.0
+offset_top = 484.0
+offset_right = 856.0
+offset_bottom = 585.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("1_m66t7")

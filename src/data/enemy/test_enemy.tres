@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://bwjjxsgs81aw"]
+
+[ext_resource type="Script" uid="uid://pyou6t5qympo" path="res://src/data/enemy/enemy_data.gd" id="1_8knkl"]
+
+[resource]
+script = ExtResource("1_8knkl")
+id = "test"
+name = "Тестовый чел"
+actions = Array[String](["attack:8", "defend:5"])
+metadata/_custom_type_script = "uid://pyou6t5qympo"

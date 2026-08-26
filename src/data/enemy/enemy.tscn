@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://db6bmj0sriik1"]
+
+[ext_resource type="Script" uid="uid://bfpi5dalp4xgv" path="res://src/data/enemy/enemy.gd" id="1_tkbbh"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_bhunq"]
+radius = 114.00439
+
+[node name="Enemy" type="Area2D" unique_id=1142740305]
+script = ExtResource("1_tkbbh")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1803948255]
+position = Vector2(26, 36)
+shape = SubResource("CircleShape2D_bhunq")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1589811774]
+offset_right = 50.0
+offset_bottom = 82.0
+color = Color(1, 0, 0, 1)
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

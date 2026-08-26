@@ -1,0 +1,117 @@
+[gd_scene format=3 uid="uid://blcjfxlxa31xx"]
+
+[ext_resource type="Script" uid="uid://bfx2vt1l5mv71" path="res://src/battle/enemy_in_battle.gd" id="1_iyoeq"]
+[ext_resource type="Texture2D" uid="uid://btnqtopfel4dq" path="res://assets/player/attack1.png" id="2_fhwkn"]
+[ext_resource type="FontFile" uid="uid://c35xg7jni7v5p" path="res://assets/fonts/PixeloidSans.ttf" id="2_vm073"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vm073"]
+atlas = ExtResource("2_fhwkn")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xpvo7"]
+atlas = ExtResource("2_fhwkn")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pwttg"]
+atlas = ExtResource("2_fhwkn")
+region = Rect2(0, 128, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qcql0"]
+atlas = ExtResource("2_fhwkn")
+region = Rect2(128, 128, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ps1q6"]
+atlas = ExtResource("2_fhwkn")
+region = Rect2(0, 256, 128, 128)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_bhunq"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vm073")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xpvo7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pwttg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qcql0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ps1q6")
+}],
+"loop": 0,
+"name": &"default_attack",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fhwkn"]
+size = Vector2(16, 444)
+
+[node name="EnemyInBattle" type="Node2D" unique_id=2066354428]
+script = ExtResource("1_iyoeq")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=340808185]
+offset_left = 860.0
+offset_top = 317.0
+offset_right = 945.0
+offset_bottom = 442.0
+color = Color(0.85429317, 0.18649402, 0.34693673, 1)
+
+[node name="HPBar" type="ProgressBar" parent="." unique_id=1679505462]
+offset_left = 840.0
+offset_top = 454.0
+offset_right = 962.0
+offset_bottom = 481.0
+show_percentage = false
+
+[node name="HPText" type="Label" parent="HPBar" unique_id=2012711126]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("2_vm073")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Block" type="Label" parent="." unique_id=274767764]
+offset_left = 882.0
+offset_top = 259.0
+offset_right = 922.0
+offset_bottom = 302.0
+
+[node name="Intent" type="Label" parent="." unique_id=1175957020]
+offset_left = 839.0
+offset_top = 208.0
+offset_right = 960.0
+offset_bottom = 231.0
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=487467252]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=525966392]
+visible = false
+position = Vector2(899, 379)
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_bhunq")
+animation = &"default_attack"
+frame = 4
+frame_progress = 1.0
+
+[node name="Wall" type="StaticBody2D" parent="AnimatedSprite2D" unique_id=1981815353]
+
+[node name="ColorRect" type="ColorRect" parent="AnimatedSprite2D/Wall" unique_id=1857094137]
+offset_left = -557.0
+offset_right = -541.0
+offset_bottom = 444.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AnimatedSprite2D/Wall" unique_id=708015325]
+position = Vector2(-549, 222)
+shape = SubResource("RectangleShape2D_fhwkn")
+
+[connection signal="block_changed" from="." to="." method="_on_block_changed"]
+[connection signal="hp_changed" from="." to="." method="_on_hp_changed"]
+[connection signal="intent_changed" from="." to="." method="_on_intent_changed"]

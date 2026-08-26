@@ -1,0 +1,171 @@
+[gd_scene format=3 uid="uid://bqms3dqo57s73"]
+
+[ext_resource type="Script" uid="uid://cynp4v16ywp0o" path="res://src/battle/player_in_battle.gd" id="1_j5cyl"]
+[ext_resource type="Texture2D" uid="uid://dyjjv8w5ueony" path="res://assets/player/Д13list.png" id="2_os80c"]
+[ext_resource type="FontFile" uid="uid://c35xg7jni7v5p" path="res://assets/fonts/PixeloidSans.ttf" id="2_weow4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mn1mn"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pwttg"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.8, 0.8, 0.8, 0)
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xpvo7"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0, 0, 0, 1)
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_weow4"]
+bg_color = Color(1, 0, 0, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.8, 0.8, 0.8, 0)
+shadow_color = Color(0, 0, 0, 0.4627451)
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vm073"]
+bg_color = Color(0.24325079, 0.6082821, 1, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.12826005, 0.40319926, 0.9604867, 1)
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+corner_detail = 2
+anti_aliasing = false
+
+[sub_resource type="Animation" id="Animation_weow4"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [41]
+}
+
+[sub_resource type="Animation" id="Animation_5cdk3"]
+resource_name = "attack_battle"
+length = 0.8
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0017890669, 0.099999994, 0.19999999, 0.29999998, 0.4017891, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [52, 53, 54, 55, 56, 57, 58, 59]
+}
+
+[sub_resource type="Animation" id="Animation_uv1gr"]
+resource_name = "idle_battle"
+length = 1.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.099999994, 0.19999999, 0.29999998, 0.39999998, 0.49999997, 0.59999996, 0.6999999, 0.79999995, 0.9, 0.99999994, 1.0999999),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_14gqg"]
+_data = {
+&"RESET": SubResource("Animation_weow4"),
+&"attack_battle": SubResource("Animation_5cdk3"),
+&"idle_battle": SubResource("Animation_uv1gr")
+}
+
+[node name="PlayerInBattle" type="Node2D" unique_id=270825366]
+script = ExtResource("1_j5cyl")
+
+[node name="CatchUpBar" type="ProgressBar" parent="." unique_id=610715414]
+offset_left = 167.0
+offset_top = 439.0
+offset_right = 289.0
+offset_bottom = 466.0
+theme_override_styles/background = SubResource("StyleBoxFlat_mn1mn")
+theme_override_styles/fill = SubResource("StyleBoxFlat_pwttg")
+value = 75.0
+show_percentage = false
+
+[node name="HPBar" type="ProgressBar" parent="." unique_id=2030033161]
+offset_left = 167.0
+offset_top = 439.0
+offset_right = 289.0
+offset_bottom = 466.0
+theme_override_styles/background = SubResource("StyleBoxFlat_xpvo7")
+theme_override_styles/fill = SubResource("StyleBoxFlat_weow4")
+value = 30.0
+show_percentage = false
+
+[node name="HPText" type="Label" parent="HPBar" unique_id=777203884]
+z_index = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("2_weow4")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Block" type="Label" parent="HPBar" unique_id=528087154]
+layout_mode = 0
+offset_left = -21.0
+offset_top = -6.0
+offset_right = 10.0
+offset_bottom = 29.0
+theme_override_fonts/font = ExtResource("2_weow4")
+theme_override_styles/normal = SubResource("StyleBoxFlat_vm073")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Energy" type="Label" parent="." unique_id=36640031]
+offset_left = 103.0
+offset_top = 335.0
+offset_right = 160.0
+offset_bottom = 378.0
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1398213391]
+texture_filter = 1
+position = Vector2(226, 363)
+scale = Vector2(2, 2)
+texture = ExtResource("2_os80c")
+hframes = 10
+vframes = 6
+frame = 41
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1454797059]
+libraries/ = SubResource("AnimationLibrary_14gqg")
+autoplay = &"idle_battle"
+
+[connection signal="block_changed" from="." to="." method="_on_block_changed"]
+[connection signal="energy_changed" from="." to="." method="_on_energy_changed"]
+[connection signal="hp_changed" from="." to="." method="_on_hp_changed"]

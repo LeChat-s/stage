@@ -1,0 +1,13 @@
+# Godot-specific files
+.godot/
+.import/
+export_presets.cfg
+
+# Mono-specific files (если используете C#)
+.mono/
+data_*/
+mono_crash*.log
+
+# System files
+*.tmp
+.DS_Store

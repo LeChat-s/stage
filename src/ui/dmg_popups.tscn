@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://dekwyuxq6uka7"]
+
+[ext_resource type="FontFile" uid="uid://c35xg7jni7v5p" path="res://assets/fonts/PixeloidSans.ttf" id="1_yq20b"]
+[ext_resource type="Script" uid="uid://bai5bpks630b0" path="res://src/ui/dmg_popups.gd" id="2_bkunt"]
+
+[node name="DmgPopups" type="Label" unique_id=1184062390]
+top_level = true
+z_index = 100
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_yq20b")
+theme_override_font_sizes/font_size = 24
+text = "999"
+script = ExtResource("2_bkunt")

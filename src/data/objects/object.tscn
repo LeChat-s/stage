@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://um78whd1uphg"]
+
+[ext_resource type="Script" uid="uid://cjhd8etvtofa" path="res://src/data/objects/object.gd" id="1_mtfsg"]
+[ext_resource type="PackedScene" uid="uid://ddtfos6uie8bc" path="res://src/ui/interaction_label.tscn" id="2_j500c"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_bhunq"]
+radius = 25.019993
+
+[node name="Object" type="Node2D" unique_id=1715334503]
+script = ExtResource("1_mtfsg")
+
+[node name="Art" type="Sprite2D" parent="." unique_id=525642780]
+texture_filter = 1
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1312951074]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=495214607]
+shape = SubResource("CircleShape2D_bhunq")
+
+[node name="InteractionLabel" parent="." unique_id=1410559836 instance=ExtResource("2_j500c")]
+visible = false
+offset_left = 26.0
+offset_top = -51.0
+offset_right = 146.0
+offset_bottom = -23.0
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_body_exited"]

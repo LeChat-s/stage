@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://ch4muafocs28r"]
+
+[ext_resource type="Texture2D" uid="uid://dwdmj5aqnlwan" path="res://assets/card/atacck_explosion.png" id="1_kvchl"]
+[ext_resource type="Script" uid="uid://c602y2ab5ly3b" path="res://src/data/cards/cards_data.gd" id="1_w30f7"]
+
+[resource]
+script = ExtResource("1_w30f7")
+id = "1"
+name = "Attack"
+dmg = 10
+type = "attack"
+description = "Это атака"
+effect_type = "attack_battle"
+artwork = ExtResource("1_kvchl")
+metadata/_custom_type_script = "uid://c602y2ab5ly3b"

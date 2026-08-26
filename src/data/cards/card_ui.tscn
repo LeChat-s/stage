@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://bucgr6pydjimp"]
+
+[ext_resource type="Script" uid="uid://cc7qx40s3it3x" path="res://src/data/cards/card_ui.gd" id="1_md8go"]
+[ext_resource type="Texture2D" uid="uid://dkdc86d82rifb" path="res://assets/card/attack_base.png" id="2_48m6c"]
+
+[node name="Card_UI" type="Control" unique_id=1007518082]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_md8go")
+
+[node name="Art" type="TextureRect" parent="." unique_id=1352411248]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_48m6c")
