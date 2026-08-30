@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://1oi2xbd4o5u4"]
+
+[ext_resource type="Texture2D" uid="uid://bs163lul3cds4" path="res://assets/card/contamination_base.png" id="1_267af"]
+[ext_resource type="Script" uid="uid://c602y2ab5ly3b" path="res://src/data/cards/cards_data.gd" id="1_itjyj"]
+
+[resource]
+script = ExtResource("1_itjyj")
+id = "inf_magical_girl"
+name = "Заражение: Девочка-волшебница"
+cost = 3
+type = "infection"
+target_type = 1
+effects = Array[Dictionary]([{}])
+description = "+1 Энергия и карта 'Концентрация' каждый ход. Атаки и щиты сильнее от Магического заряда."
+effect_type = "buff"
+artwork = ExtResource("1_267af")
+metadata/_custom_type_script = "uid://c602y2ab5ly3b"

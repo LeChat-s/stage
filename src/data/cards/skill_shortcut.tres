@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://c8ha1xrrg715e"]
+
+[ext_resource type="Script" uid="uid://c602y2ab5ly3b" path="res://src/data/cards/cards_data.gd" id="1_hmubm"]
+
+[resource]
+script = ExtResource("1_hmubm")
+id = "3"
+name = "Shortcut"
+cost = 2
+type = "defend"
+description = "Позволяет уклонится от атаки врага с вреоятностью 80%"
+metadata/_custom_type_script = "uid://c602y2ab5ly3b"

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://cman3mx6ypxhn"]
+
+[ext_resource type="Texture2D" uid="uid://d3fmcbrj7wfwm" path="res://assets/card/defend_base.png" id="1_t377e"]
+[ext_resource type="Script" uid="uid://c602y2ab5ly3b" path="res://src/data/cards/cards_data.gd" id="2_4y2pp"]
+
+[resource]
+script = ExtResource("2_4y2pp")
+id = "def_magical_shield"
+name = "Волшебный щит"
+shild = 6
+type = "defense"
+target_type = 1
+description = "Дает 6 щита. Прочность щита увеличивается от текущего заряда."
+artwork = ExtResource("1_t377e")
+metadata/_custom_type_script = "uid://c602y2ab5ly3b"

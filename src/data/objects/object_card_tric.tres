@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ObjectData" format=3 uid="uid://csppn1ddpbu4b"]
+
+[ext_resource type="Texture2D" uid="uid://dy0v3h2urr3lx" path="res://assets/object/oblect_card_trick.png" id="1_gp6ru"]
+[ext_resource type="Script" uid="uid://c5ar8cylrm7io" path="res://src/data/objects/objects_data.gd" id="1_n4jpw"]
+
+[resource]
+script = ExtResource("1_n4jpw")
+id = "1"
+name = "Трюк"
+type = "CARD"
+interaction_text = "   Подобрать (F)"
+description = "Позволяет вытянуть две карты из колоды."
+artwork = ExtResource("1_gp6ru")
+metadata/_custom_type_script = "uid://c5ar8cylrm7io"

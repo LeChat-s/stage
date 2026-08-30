@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://c46r3ghfq8ef4"]
+
+[ext_resource type="Script" uid="uid://c602y2ab5ly3b" path="res://src/data/cards/cards_data.gd" id="1_57ahy"]
+[ext_resource type="Texture2D" uid="uid://cw1whu5plb2fw" path="res://assets/card/event_base.png" id="1_knkjp"]
+
+[resource]
+script = ExtResource("1_57ahy")
+id = "4"
+name = "Lets go Gamble"
+cost = 0
+type = "defend"
+description = "Выиягмвает от 1 до 3 случайных карт"
+artwork = ExtResource("1_knkjp")
+metadata/_custom_type_script = "uid://c602y2ab5ly3b"

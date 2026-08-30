@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://bdv1oafu1i04y"]
+
+[ext_resource type="Script" uid="uid://c602y2ab5ly3b" path="res://src/data/cards/cards_data.gd" id="1_dx0pr"]
+[ext_resource type="Texture2D" uid="uid://dkdc86d82rifb" path="res://assets/card/attack_base.png" id="1_em330"]
+
+[resource]
+script = ExtResource("1_dx0pr")
+id = "atk_magical_rain"
+name = "Волшебный дождь"
+dmg = 5
+type = "attack"
+target_type = 2
+effects = Array[Dictionary]([{
+"id": "gain_charge_per_hit"
+}])
+description = "Наносит 5 урона всем врагам. Удар дает +1 к заряду."
+effect_type = "attack_battle"
+artwork = ExtResource("1_em330")
+metadata/_custom_type_script = "uid://c602y2ab5ly3b"

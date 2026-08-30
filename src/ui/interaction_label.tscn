@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://ddtfos6uie8bc"]
+
+[ext_resource type="FontFile" uid="uid://c35xg7jni7v5p" path="res://assets/fonts/PixeloidSans.ttf" id="1_74fsw"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_74fsw"]
+bg_color = Color(0, 0, 0, 0.91764706)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+corner_detail = 2
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vr0yn"]
+bg_color = Color(0.029387457, 0.029387457, 0.029387457, 1)
+anti_aliasing = false
+
+[node name="InteractionLabel" type="RichTextLabel" unique_id=1410559836]
+texture_filter = 1
+custom_minimum_size = Vector2(120, 0)
+offset_right = 120.0
+offset_bottom = 28.0
+theme_override_fonts/normal_font = ExtResource("1_74fsw")
+theme_override_font_sizes/normal_font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_74fsw")
+theme_override_styles/focus = SubResource("StyleBoxFlat_vr0yn")
+bbcode_enabled = true
+text = "	Я абоба"
+vertical_alignment = 1
+justification_flags = 161

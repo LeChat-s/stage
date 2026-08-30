@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://cdi7lok3p0xsx"]
+
+[ext_resource type="Texture2D" uid="uid://cycf4j4cxf2e7" path="res://assets/card/status_effect_base.png" id="1_bnk3b"]
+[ext_resource type="Script" uid="uid://c602y2ab5ly3b" path="res://src/data/cards/cards_data.gd" id="1_yhexm"]
+
+[resource]
+script = ExtResource("1_yhexm")
+id = "status_magical_charge"
+name = "Волшебный Заряд"
+type = "status_effect"
+effects = Array[Dictionary]([{}])
+description = "Тратит всю оставшуюся энергию X. Переводит ее в заряды в двойном размере."
+artwork = ExtResource("1_bnk3b")
+metadata/_custom_type_script = "uid://c602y2ab5ly3b"

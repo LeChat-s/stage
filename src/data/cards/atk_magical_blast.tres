@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://ch4muafocs28r"]
+
+[ext_resource type="Texture2D" uid="uid://dwdmj5aqnlwan" path="res://assets/card/atacck_explosion.png" id="1_kdk1d"]
+[ext_resource type="Script" uid="uid://c602y2ab5ly3b" path="res://src/data/cards/cards_data.gd" id="2_gqcbl"]
+
+[resource]
+script = ExtResource("2_gqcbl")
+id = "Волшебный взрыв"
+name = "Attack"
+dmg = 10
+type = "attack"
+effects = Array[Dictionary]([{
+"id": "double_dmg_if_charge_5"
+}])
+description = "аносит 10 урона. Если заряд > 5: тратит 3 заряда и наносит х2 урон."
+effect_type = "attack_battle"
+artwork = ExtResource("1_kdk1d")
+metadata/_custom_type_script = "uid://c602y2ab5ly3b"

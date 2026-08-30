@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://bnx4qc6wuhwhn"]
+
+[ext_resource type="Texture2D" uid="uid://dq1apsj330s7e" path="res://assets/texture/brown-paper-text-space.jpg" id="1_ynesl"]
+
+[node name="Info" type="Control" unique_id=1105692136]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1410057528]
+custom_minimum_size = Vector2(900, 500)
+layout_mode = 0
+offset_left = 122.0
+offset_top = 53.0
+offset_right = 1022.0
+offset_bottom = 553.0
+texture = ExtResource("1_ynesl")
+expand_mode = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="TextureRect" unique_id=1504223589]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -14.0
+offset_bottom = -34.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_transform_enabled = true
