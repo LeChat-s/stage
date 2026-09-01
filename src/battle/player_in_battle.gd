@@ -12,7 +12,7 @@ signal died
 @onready var energy_text: Label = $Energy
 @onready var hp_text: Label = $HPBar/HPText
 @onready var catch_up_bar: ProgressBar = $CatchUpBar
-
+@onready var effects_ui: EffectContainer = $HPBar/Status
 var hp: int
 var max_hp: int
 var block: int

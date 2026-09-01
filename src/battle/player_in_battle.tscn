@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cynp4v16ywp0o" path="res://src/battle/player_in_battle.gd" id="1_j5cyl"]
 [ext_resource type="Texture2D" uid="uid://dyjjv8w5ueony" path="res://assets/player/Д13list.png" id="2_os80c"]
 [ext_resource type="FontFile" uid="uid://c35xg7jni7v5p" path="res://assets/fonts/PixeloidSans.ttf" id="2_weow4"]
+[ext_resource type="Script" uid="uid://dctrner31anc5" path="res://src/battle/effect_container.gd" id="3_5cdk3"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mn1mn"]
 
@@ -152,7 +153,8 @@ layout_mode = 0
 offset_left = 8.0
 offset_top = 31.0
 offset_right = 142.0
-offset_bottom = 49.0
+offset_bottom = 54.0
+script = ExtResource("3_5cdk3")
 
 [node name="Energy" type="Label" parent="." unique_id=36640031]
 offset_left = 103.0

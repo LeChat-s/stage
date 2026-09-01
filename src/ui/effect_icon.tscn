@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://bg2nmye7yxux7"]
+
+[ext_resource type="Script" uid="uid://c7d51cy56kgyc" path="res://src/ui/effect_icon.gd" id="1_tegkb"]
+[ext_resource type="FontFile" uid="uid://c35xg7jni7v5p" path="res://assets/fonts/PixeloidSans.ttf" id="2_5pdc6"]
+
+[node name="EffectIcon" type="TextureRect" unique_id=157910252]
+custom_minimum_size = Vector2(32, 32)
+offset_right = 40.0
+offset_bottom = 40.0
+expand_mode = 1
+script = ExtResource("1_tegkb")
+
+[node name="ValueLabel" type="Label" parent="." unique_id=2113858467]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.09803922, 0.41960785, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.69411767)
+theme_override_colors/font_outline_color = Color(0.20027572, 0.06784218, 0.04051262, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 0
+theme_override_constants/outline_size = 5
+theme_override_fonts/font = ExtResource("2_5pdc6")
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1

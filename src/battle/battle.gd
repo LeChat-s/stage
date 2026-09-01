@@ -13,6 +13,7 @@ var discard_pile: Array[CardData] = []
 var current_hand: Array[CardData] = []
 var active_infection: String = ""
 var magical_charge: int = 0
+var _is_battle_ending: bool = false
 
 func _ready() -> void:
 	_setup_battle()
@@ -119,12 +120,18 @@ func _on_player_died() -> void:
 	get_tree().change_scene_to_file("res://src/world/test_lvl.tscn")
 
 func _on_enemy_died() -> void:
+	if _is_battle_ending:
+		return
+	_is_battle_ending = true
 	print("враг мертв") 
 	if GameState.current_enemy:
 		GameState.mark_enemy_detected(GameState.current_enemy.id)
 	await get_tree().create_timer(1.0).timeout
-	get_tree().change_scene_to_file("res://src/world/test_lvl.tscn")
-
+	var tree = Engine.get_main_loop() as SceneTree
+	if tree:
+		tree.change_scene_to_file("res://src/world/test_lvl.tscn")
+	else:
+		print("Ошибка: Не удалось получить доступ к SceneTree для смены сцены")
 func _update_pipe_labels() -> void:
 	deck_label.text = "Колода: " + str(deck.size())
 	discard_label.text = "Сброс: " + str(discard_pile.size())

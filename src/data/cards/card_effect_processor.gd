@@ -1,16 +1,31 @@
 class_name CardEffectProcessor
 extends RefCounted
 
+# База данных эффектов: теперь хранит метод и путь к иконке (или готовую текстуру)
 static var effect_registry: Dictionary = {
-	"set_infection_magical_girl": _fx_set_infection_magical_girl,
-	"gain_charge_2": _fx_gain_charge_2,
-	"gain_charge_per_hit": _fx_gain_charge_per_hit,
-	"spend_all_energy_for_charge": _fx_spend_all_energy_for_charge,
-	"double_dmg_if_charge_5": _fx_double_dmg_if_charge_5,
-	
-	"draw_card": _fx_draw_card,
-	"draw_3": _fx_draw_3,
-	"clean_debuffs": _fx_clean_debuffs
+	"set_infection_magical_girl": {
+		"method": _fx_set_infection_magical_girl,
+		"icon": preload("res://assets/icons/contamination_magical_girl.png")
+	},
+	"gain_charge_2": {
+		"method": _fx_gain_charge_2,
+		"icon": preload("res://assets/icons/charge.png")
+	},
+	"gain_charge_per_hit": {
+		"method": _fx_gain_charge_per_hit,
+		"icon": preload("res://assets/icons/charge.png")
+	},
+	"spend_all_energy_for_charge": {
+		"method": _fx_spend_all_energy_for_charge,
+		"icon": preload("res://assets/icons/charge.png")
+	},
+	"double_dmg_if_charge_5": {
+		"method": _fx_double_dmg_if_charge_5,
+		"icon": preload("res://assets/icons/double_damage.png")
+	},
+	"draw_card": { "method": _fx_draw_card, "icon": null },
+	"draw_3": { "method": _fx_draw_3, "icon": null },
+	"clean_debuffs": { "method": _fx_clean_debuffs, "icon": null }
 }
 
 static func process_card(card_data: CardData, battle: Battle) -> void:
@@ -20,7 +35,7 @@ static func process_card(card_data: CardData, battle: Battle) -> void:
 	if final_dmg > 0:
 		battle.player.play_attack()
 		battle.enemy.take_damage(final_dmg)
-			
+		
 	if final_shield > 0:
 		battle.player.add_block(final_shield)
 		
@@ -33,22 +48,48 @@ static func process_card(card_data: CardData, battle: Battle) -> void:
 		var effect_id = effect.get("id", "")
 		
 		if effect_registry.has(effect_id):
-			effect_registry[effect_id].call(battle, effect)
+			effect_registry[effect_id]["method"].call(battle, effect)
+			_update_ui_effects(battle, effect_id)
 		else:
 			print("Эффект не найден: ", effect_id)
 
+static func _update_ui_effects(battle: Battle, effect_id: String) -> void:
+	var effect_info = effect_registry[effect_id]
+	var texture = effect_info["icon"]
+	
+	if texture == null:
+		return
+		
+	if not "effects_ui" in battle.player:
+		return
+		
+	var ui_container = battle.player.effects_ui
+	
+	if effect_id in ["gain_charge_2", "gain_charge_per_hit", "spend_all_energy_for_charge"]:
+		ui_container.update_effect("magical_charge", battle.magical_charge, texture)
+		
+	elif effect_id == "double_dmg_if_charge_5":
+		var val = -1 if battle.magical_charge > 5 else 0
+		ui_container.update_effect(effect_id, val, texture)
+		
+	elif effect_id == "set_infection_magical_girl":
+		var val = -1 if battle.active_infection == "inf_magical_girl" else 0
+		ui_container.update_effect(effect_id, val, texture)
+	if effect_id in ["gain_charge_2", "gain_charge_per_hit", "spend_all_energy_for_charge"]:
+		var double_dmg_texture = effect_registry["double_dmg_if_charge_5"]["icon"]
+		if double_dmg_texture:
+			var val = -1 if battle.magical_charge > 5 else 0
+			ui_container.update_effect("double_dmg_if_charge_5", val, double_dmg_texture)
 static func _calculate_modified_damage(base_dmg: int, battle: Battle) -> int:
 	if base_dmg <= 0: return 0
 	match battle.active_infection:
-		"inf_magical_girl":
-			return base_dmg + battle.magical_charge
+		"inf_magical_girl": return base_dmg + battle.magical_charge
 	return base_dmg
 
 static func _calculate_modified_shield(base_shield: int, battle: Battle) -> int:
 	if base_shield <= 0: return 0
 	match battle.active_infection:
-		"inf_magical_girl":
-			return base_shield + (battle.magical_charge * 2)
+		"inf_magical_girl": return base_shield + (battle.magical_charge * 2)
 	return base_shield
 
 static func calculate_dynamic_card_cost(card_data: CardData, battle: Battle) -> int:
@@ -64,14 +105,17 @@ static func _fx_set_infection_magical_girl(battle: Battle, _effect: Dictionary) 
 static func _fx_gain_charge_2(battle: Battle, _effect: Dictionary) -> void:
 	battle.magical_charge += 2
 	print(battle.magical_charge)
+
 static func _fx_gain_charge_per_hit(battle: Battle, _effect: Dictionary) -> void:
 	battle.magical_charge += 1
 	print(battle.magical_charge)
+
 static func _fx_spend_all_energy_for_charge(battle: Battle, _effect: Dictionary) -> void:
 	var left_energy = battle.player.energy
 	battle.player.spend_energy(left_energy)
 	battle.magical_charge += left_energy * 2
 	print(battle.magical_charge)
+
 static func _fx_double_dmg_if_charge_5(battle: Battle, _effect: Dictionary) -> void:
 	if battle.magical_charge > 5:
 		battle.magical_charge -= 3
