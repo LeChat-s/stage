@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://ch4muafocs28r"]
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://xcbvkahl0wuq"]
 
 [ext_resource type="Texture2D" uid="uid://dwdmj5aqnlwan" path="res://assets/card/atacck_explosion.png" id="1_kvchl"]
 [ext_resource type="Script" uid="uid://c602y2ab5ly3b" path="res://src/data/cards/cards_data.gd" id="1_w30f7"]

@@ -24,7 +24,7 @@ func _ready() -> void:
 	animation_player.animation_finished.connect(_on_animation_finished)
 	
 func setup(player_data: Dictionary) -> void:
-	hp = player_data["hp"]
+	hp = GameState.player_hp
 	max_hp = player_data["max_hp"]
 	if has_node("CatchUpBar"):
 		$CatchUpBar.value = max_hp
@@ -51,6 +51,8 @@ func take_damage(amount: int) -> void:
 		block -= remaining
 		remaining -= absorbed
 	hp -= remaining
+	GameState.player_hp = hp
+	print(GameState.player_hp)
 	if hp < 0:
 		hp = 0
 	emit_signals()
@@ -107,3 +109,8 @@ func _on_block_changed(amount: int) -> void:
 
 func _on_energy_changed(amount: int) -> void:
 	energy_text.text = str(amount) 
+
+func add_energy(value: int) -> void:
+	print(energy)
+	energy = energy + value
+	print(energy)

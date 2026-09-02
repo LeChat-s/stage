@@ -2,7 +2,6 @@
 
 [ext_resource type="PackedScene" uid="uid://bqms3dqo57s73" path="res://src/battle/player_in_battle.tscn" id="1_ewtd0"]
 [ext_resource type="Script" uid="uid://dfbnl3yl6n6q3" path="res://src/battle/battle.gd" id="1_wssn5"]
-[ext_resource type="Texture2D" uid="uid://w15gvgwrj0gj" path="res://assets/battle/background/back_battle1.png" id="2_u3ckx"]
 [ext_resource type="PackedScene" uid="uid://blcjfxlxa31xx" path="res://src/battle/enemy_in_battle.tscn" id="2_wssn5"]
 [ext_resource type="PackedScene" uid="uid://bj7thskyggr24" path="res://src/battle/hand.tscn" id="3_u3ckx"]
 
@@ -11,12 +10,6 @@ script = ExtResource("1_wssn5")
 
 [node name="Background" type="CanvasLayer" parent="." unique_id=413745224]
 layer = -10
-
-[node name="TextureRect" type="TextureRect" parent="Background" unique_id=1565085689]
-offset_top = -28.0
-offset_right = 1200.0
-offset_bottom = 647.0
-texture = ExtResource("2_u3ckx")
 
 [node name="PlayerInBattle" parent="." unique_id=270825366 instance=ExtResource("1_ewtd0")]
 position = Vector2(-13, 66)

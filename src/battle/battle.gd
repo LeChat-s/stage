@@ -46,7 +46,7 @@ func _apply_infection_turn_start_effects() -> void:
 	match active_infection:
 		"inf_magical_girl":
 			player.add_energy(1)
-			var concentration_res = load("res://src/cards/evt_concentration.tres") as CardData
+			var concentration_res = load("res://src/data/cards/evt_concentration.tres") as CardData
 			if concentration_res:
 				_add_card_to_hand_directly(concentration_res.duplicate())
 
@@ -77,7 +77,7 @@ func _on_card_selected(card_data: CardData) -> void:
 	CardEffectProcessor.process_card(card_data, self)
 	current_hand.erase(card_data)
 	
-	if card_data.has_effect("exile_on_turn_end") or card_data.id == "evt_concentration":
+	if card_data.has_effect("exile_on_turn_end"):
 		card_data.queue_free()
 	else:
 		discard_pile.append(card_data)
@@ -94,7 +94,7 @@ func _refresh_hand() -> void:
 func _on_end_turn() -> void:
 	var cards_to_discard: Array[CardData] = [] 
 	for card in current_hand:
-		if card.has_effect("exile_on_turn_end") or card.id == "evt_concentration":
+		if card.has_effect("exile_on_turn_end"):
 			card.queue_free()
 		else:
 			cards_to_discard.append(card)
@@ -124,14 +124,15 @@ func _on_enemy_died() -> void:
 		return
 	_is_battle_ending = true
 	print("враг мертв") 
-	if GameState.current_enemy:
-		GameState.mark_enemy_detected(GameState.current_enemy.id)
+	if GameState.current_enemy_node_name != "":
+		GameState.mark_enemy_detected(GameState.current_enemy_node_name)
 	await get_tree().create_timer(1.0).timeout
 	var tree = Engine.get_main_loop() as SceneTree
 	if tree:
 		tree.change_scene_to_file("res://src/world/test_lvl.tscn")
 	else:
 		print("Ошибка: Не удалось получить доступ к SceneTree для смены сцены")
+
 func _update_pipe_labels() -> void:
 	deck_label.text = "Колода: " + str(deck.size())
 	discard_label.text = "Сброс: " + str(discard_pile.size())

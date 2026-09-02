@@ -7,10 +7,12 @@
 script = ExtResource("1_itjyj")
 id = "inf_magical_girl"
 name = "Заражение: Девочка-волшебница"
-cost = 3
+cost = 5
 type = "infection"
 target_type = 1
-effects = Array[Dictionary]([{}])
+effects = Array[Dictionary]([{
+"id": "set_infection_magical_girl"
+}])
 description = "+1 Энергия и карта 'Концентрация' каждый ход. Атаки и щиты сильнее от Магического заряда."
 effect_type = "buff"
 artwork = ExtResource("1_267af")

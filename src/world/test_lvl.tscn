@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://um78whd1uphg" path="res://src/data/objects/object.tscn" id="5_wqilg"]
 [ext_resource type="Resource" uid="uid://csppn1ddpbu4b" path="res://src/data/objects/object_card_tric.tres" id="6_clxk4"]
 [ext_resource type="Texture2D" uid="uid://bjivxirift41l" path="res://assets/vfx/512x512 textures (7).png" id="8_h661f"]
+[ext_resource type="Script" uid="uid://pyou6t5qympo" path="res://src/data/enemy/enemy_data.gd" id="11_clxk4"]
 
 [sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_h661f"]
 polygon = PackedVector2Array(-16, -16, 16, -16, 16, 16, -11, 16, -11, 15, -13, 15, -13, 14, -15, 14, -15, 13, -16, 13)
@@ -363,6 +364,13 @@ texture_region_size = Vector2i(32, 32)
 tile_size = Vector2i(32, 32)
 sources/0 = SubResource("TileSetAtlasSource_iumud")
 
+[sub_resource type="Resource" id="Resource_clxk4"]
+script = ExtResource("11_clxk4")
+id = "test2"
+name = "Тестовый чел Анатолий"
+actions = Array[String](["attack:8", "defend:5"])
+metadata/_custom_type_script = "uid://pyou6t5qympo"
+
 [node name="TestLvl" type="Node2D" unique_id=654266818]
 script = ExtResource("1_uar7d")
 
@@ -430,9 +438,13 @@ tile_set = SubResource("TileSet_6f8o3")
 [node name="Player" parent="." unique_id=980014995 instance=ExtResource("1_jd5aa")]
 position = Vector2(67, 321)
 
-[node name="Enemy" parent="." unique_id=1142740305 groups=["enemy"] instance=ExtResource("3_mn1mn")]
+[node name="Гарбушка" parent="." unique_id=1142740305 groups=["enemy"] instance=ExtResource("3_mn1mn")]
 position = Vector2(498, 321)
 enemy_data = ExtResource("4_mpbs2")
+
+[node name="Анатолий" parent="." unique_id=2134290798 groups=["enemy"] instance=ExtResource("3_mn1mn")]
+position = Vector2(-426, 318)
+enemy_data = SubResource("Resource_clxk4")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=2131993573]
 
@@ -464,3 +476,5 @@ offset_left = 2309.0
 offset_top = 149.0
 offset_right = 4973.0
 offset_bottom = 190.83429
+
+[node name="InfoLayer" type="CanvasLayer" parent="." unique_id=650964823]

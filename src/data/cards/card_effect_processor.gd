@@ -7,6 +7,10 @@ static var effect_registry: Dictionary = {
 		"method": _fx_set_infection_magical_girl,
 		"icon": preload("res://assets/icons/contamination_magical_girl.png")
 	},
+	"gain_charge": {
+		"method": _fx_gain_charge,
+		"icon": preload("res://assets/icons/charge.png")
+	},
 	"gain_charge_2": {
 		"method": _fx_gain_charge_2,
 		"icon": preload("res://assets/icons/charge.png")
@@ -65,7 +69,7 @@ static func _update_ui_effects(battle: Battle, effect_id: String) -> void:
 		
 	var ui_container = battle.player.effects_ui
 	
-	if effect_id in ["gain_charge_2", "gain_charge_per_hit", "spend_all_energy_for_charge"]:
+	if effect_id in ["gain_charge", "gain_charge_2", "gain_charge_per_hit", "spend_all_energy_for_charge"]:
 		ui_container.update_effect("magical_charge", battle.magical_charge, texture)
 		
 	elif effect_id == "double_dmg_if_charge_5":
@@ -101,6 +105,10 @@ static func calculate_dynamic_card_cost(card_data: CardData, battle: Battle) -> 
 static func _fx_set_infection_magical_girl(battle: Battle, _effect: Dictionary) -> void:
 	battle.active_infection = "inf_magical_girl"
 	print("Заражение: Девочка-волшебница успешно активировано.")
+
+static func _fx_gain_charge(battle: Battle, _effect: Dictionary) -> void:
+	battle.magical_charge += 1
+	print(battle.magical_charge)
 
 static func _fx_gain_charge_2(battle: Battle, _effect: Dictionary) -> void:
 	battle.magical_charge += 2

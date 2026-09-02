@@ -20,7 +20,7 @@ func _physics_process(delta: float) -> void:
 	
 	if Input.is_action_just_pressed("jump"):
 		velocity_component.jump(self)
-		
+	
 	if Input.is_action_just_pressed("dash"):
 		dash_component.start_dash(self, face_direction)
 

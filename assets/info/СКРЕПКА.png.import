@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://w15gvgwrj0gj"
-path="res://.godot/imported/back_battle1.png-ed474d0e0fdad4139ed2b87ac4ac05fd.ctex"
+uid="uid://bo4rc5ii0v1hv"
+path="res://.godot/imported/СКРЕПКА.png-ec274682dfd825887cd51b927693fa60.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/battle/background/back_battle1.png"
-dest_files=["res://.godot/imported/back_battle1.png-ed474d0e0fdad4139ed2b87ac4ac05fd.ctex"]
+source_file="res://assets/info/СКРЕПКА.png"
+dest_files=["res://.godot/imported/СКРЕПКА.png-ec274682dfd825887cd51b927693fa60.ctex"]
 
 [params]
 

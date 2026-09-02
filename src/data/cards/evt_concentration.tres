@@ -11,9 +11,8 @@ cost = 0
 type = "event"
 target_type = 1
 effects = Array[Dictionary]([{
-"": "",
-"id": "draw_card"
+"id": "gain_charge"
 }])
-description = "Дает +2 к заряду и добирает 1 карту. Исчезает в конце хода."
+description = "Дает +1 к заряду и добирает 1 карту. Исчезает в конце хода."
 artwork = ExtResource("1_5457k")
 metadata/_custom_type_script = "uid://c602y2ab5ly3b"

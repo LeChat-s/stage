@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_8knkl")
-id = "test"
-name = "Тестовый чел"
+id = "test1"
+name = "Тестовый чел Горбушка"
 actions = Array[String](["attack:8", "defend:5"])
 metadata/_custom_type_script = "uid://pyou6t5qympo"

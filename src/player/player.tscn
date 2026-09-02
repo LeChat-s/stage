@@ -140,6 +140,8 @@ script = ExtResource("1_4anbu")
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1039032812]
 offset = Vector2(0, -80)
 zoom = Vector2(2, 2)
+process_callback = 0
+position_smoothing_enabled = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1413902190]
 position = Vector2(0, 4)

@@ -1,34 +1,101 @@
 [gd_scene format=3 uid="uid://bnx4qc6wuhwhn"]
 
-[ext_resource type="Texture2D" uid="uid://dq1apsj330s7e" path="res://assets/texture/brown-paper-text-space.jpg" id="1_ynesl"]
+[ext_resource type="Script" uid="uid://dojwflcy0y74l" path="res://src/ui/info.gd" id="1_4edvv"]
+[ext_resource type="Texture2D" uid="uid://baid6i7f70kbr" path="res://assets/info/Д-13.png" id="1_kg4k8"]
+[ext_resource type="Texture2D" uid="uid://bo4rc5ii0v1hv" path="res://assets/info/СКРЕПКА.png" id="2_4edvv"]
+[ext_resource type="FontFile" uid="uid://c35xg7jni7v5p" path="res://assets/fonts/PixeloidSans.ttf" id="2_shk28"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4edvv"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
 
 [node name="Info" type="Control" unique_id=1105692136]
+z_index = 150
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_4edvv")
 
-[node name="TextureRect" type="TextureRect" parent="." unique_id=1410057528]
-custom_minimum_size = Vector2(900, 500)
-layout_mode = 0
-offset_left = 122.0
-offset_top = 53.0
-offset_right = 1022.0
-offset_bottom = 553.0
-texture = ExtResource("1_ynesl")
-expand_mode = 1
-
-[node name="MarginContainer" type="MarginContainer" parent="TextureRect" unique_id=1504223589]
+[node name="TabContainer" type="TabContainer" parent="." unique_id=1956597169]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 16.0
-offset_top = 16.0
-offset_right = -14.0
-offset_bottom = -34.0
 grow_horizontal = 2
 grow_vertical = 2
-offset_transform_enabled = true
+current_tab = 0
+
+[node name="Stats" type="Control" parent="TabContainer" unique_id=1424013082]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="Paper" type="ColorRect" parent="TabContainer/Stats" unique_id=346692288]
+custom_minimum_size = Vector2(500, 600)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.28300002
+anchor_top = 0.014
+anchor_right = 0.717
+anchor_bottom = 0.98600006
+offset_left = -0.016021729
+offset_top = -0.13800049
+offset_right = 0.015991211
+offset_bottom = 0.13793945
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.90235776, 0.9023578, 0.90235776, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Stats/Paper" unique_id=1760687508]
+layout_mode = 0
+offset_left = 39.0
+offset_top = 40.5
+offset_right = 258.0
+offset_bottom = 370.0
+
+[node name="HPLabel" type="Label" parent="TabContainer/Stats/Paper/VBoxContainer" unique_id=719677830]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.000116873845, 0.0036796737, 0.0008242075, 1)
+theme_override_fonts/font = ExtResource("2_shk28")
+theme_override_styles/normal = SubResource("StyleBoxFlat_4edvv")
+
+[node name="Portret" type="TextureRect" parent="TabContainer/Stats" unique_id=504200828]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.596
+anchor_top = 0.024
+anchor_right = 0.697
+anchor_bottom = 0.266
+offset_left = 0.40795898
+offset_top = 0.19199944
+offset_right = 0.05596924
+offset_bottom = -0.12199402
+texture = ExtResource("1_kg4k8")
+expand_mode = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="TextureRect" type="TextureRect" parent="TabContainer/Stats" unique_id=105842571]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.62700003
+anchor_top = 0.003
+anchor_right = 0.698
+anchor_bottom = 0.194
+offset_left = -0.3040161
+offset_top = 0.14899993
+offset_right = -0.0960083
+offset_bottom = 0.30199432
+texture = ExtResource("2_4edvv")
+expand_mode = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Card_info" type="Control" parent="TabContainer" unique_id=559482009]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="Deck" type="Control" parent="TabContainer" unique_id=624032014]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 2
