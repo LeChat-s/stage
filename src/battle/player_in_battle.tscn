@@ -106,20 +106,20 @@ _data = {
 script = ExtResource("1_j5cyl")
 
 [node name="CatchUpBar" type="ProgressBar" parent="." unique_id=610715414]
-offset_left = 167.0
-offset_top = 439.0
-offset_right = 289.0
-offset_bottom = 466.0
+offset_left = 168.0
+offset_top = 395.0
+offset_right = 290.0
+offset_bottom = 422.0
 theme_override_styles/background = SubResource("StyleBoxFlat_mn1mn")
 theme_override_styles/fill = SubResource("StyleBoxFlat_pwttg")
 value = 75.0
 show_percentage = false
 
 [node name="HPBar" type="ProgressBar" parent="." unique_id=2030033161]
-offset_left = 167.0
-offset_top = 439.0
-offset_right = 289.0
-offset_bottom = 466.0
+offset_left = 168.0
+offset_top = 395.0
+offset_right = 290.0
+offset_bottom = 422.0
 theme_override_styles/background = SubResource("StyleBoxFlat_xpvo7")
 theme_override_styles/fill = SubResource("StyleBoxFlat_weow4")
 value = 30.0
@@ -157,14 +157,14 @@ offset_bottom = 54.0
 script = ExtResource("3_5cdk3")
 
 [node name="Energy" type="Label" parent="." unique_id=36640031]
-offset_left = 103.0
-offset_top = 335.0
-offset_right = 160.0
-offset_bottom = 378.0
+offset_left = 104.0
+offset_top = 291.0
+offset_right = 161.0
+offset_bottom = 334.0
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1398213391]
 texture_filter = 1
-position = Vector2(226, 363)
+position = Vector2(227, 319)
 scale = Vector2(2, 2)
 texture = ExtResource("2_os80c")
 hframes = 10

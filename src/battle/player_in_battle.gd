@@ -114,3 +114,9 @@ func add_energy(value: int) -> void:
 	print(energy)
 	energy = energy + value
 	print(energy)
+
+func set_highlight(active: bool) -> void:
+	if active:
+		modulate = Color(1.5, 1.5, 1.2, 1.0)
+	else:
+		modulate = Color.WHITE

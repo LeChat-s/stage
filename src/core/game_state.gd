@@ -1,13 +1,13 @@
 class_name GameStateClass
 extends Node
 
-
 @export var info_scene: PackedScene = preload("res://src/ui/info.tscn")
 
 var deck: Array[CardData] = []
 var player_hp: int = 50
 var player_max_hp: int = 50
-var current_enemy: EnemyData
+
+var current_enemies: Array[EnemyData] = []
 var defeated_enemies: Array[String] = []
 var player_world_position: Vector2 = Vector2.ZERO
 var current_enemy_node_name: String = ""
@@ -35,10 +35,12 @@ func _toggle_info_panel() -> void:
 	
 	get_tree().paused = info_instance.visible
 	get_viewport().set_input_as_handled()
+
 func reset_run() -> void:
 	deck = _get_base_deck()
 	player_hp = player_max_hp
 	defeated_enemies.clear()
+	current_enemies.clear()
 
 func mark_enemy_detected(enemy_id: String) -> void:
 	if enemy_id not in defeated_enemies:

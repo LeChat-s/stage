@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="EnemyGroup" format=3 uid="uid://r2nw4f0yhxlf"]
+
+[ext_resource type="Script" uid="uid://pyou6t5qympo" path="res://src/data/enemy/enemy_data.gd" id="1_brk8l"]
+[ext_resource type="Resource" uid="uid://bwjjxsgs81aw" path="res://src/data/enemy/test_enemy.tres" id="2_1xdho"]
+[ext_resource type="Script" uid="uid://cyuqbsd6ekw3k" path="res://src/data/enemy/enemy_group.gd" id="2_j0rp8"]
+[ext_resource type="Texture2D" uid="uid://dupy45wsjnccj" path="res://assets/enemy/mushroom/mushroom.png" id="3_1xdho"]
+
+[sub_resource type="Resource" id="Resource_j0rp8"]
+script = ExtResource("1_brk8l")
+id = "test1"
+name = "Тестовый чел А"
+max_hp = 60
+actions = Array[String](["attack:8", "defend:5"])
+sprite = ExtResource("3_1xdho")
+metadata/_custom_type_script = "uid://pyou6t5qympo"
+
+[sub_resource type="Resource" id="Resource_1xdho"]
+script = ExtResource("1_brk8l")
+id = "test1"
+name = "Тестовый чел Арсений"
+max_hp = 30
+actions = Array[String](["attack:8", "defend:5"])
+sprite = ExtResource("3_1xdho")
+metadata/_custom_type_script = "uid://pyou6t5qympo"
+
+[resource]
+script = ExtResource("2_j0rp8")
+enemies = Array[ExtResource("1_brk8l")]([ExtResource("2_1xdho"), SubResource("Resource_j0rp8"), SubResource("Resource_1xdho")])
+metadata/_custom_type_script = "uid://cyuqbsd6ekw3k"

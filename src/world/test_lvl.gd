@@ -18,8 +18,8 @@ func _connect_enemies() -> void:
 		if enemy is Enemy:
 			enemy.player_detected.connect(_on_player_detected)
 
-func _on_player_detected(enemy_data: EnemyData) -> void:
-	GameState.current_enemy = enemy_data
+func _on_player_detected(enemy_group: EnemyGroup) -> void:
+	GameState.current_enemies = enemy_group.enemies.duplicate()
 	call_deferred("_change_to_battle")
 
 func _change_to_battle() -> void:

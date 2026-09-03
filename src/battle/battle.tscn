@@ -2,11 +2,12 @@
 
 [ext_resource type="PackedScene" uid="uid://bqms3dqo57s73" path="res://src/battle/player_in_battle.tscn" id="1_ewtd0"]
 [ext_resource type="Script" uid="uid://dfbnl3yl6n6q3" path="res://src/battle/battle.gd" id="1_wssn5"]
-[ext_resource type="PackedScene" uid="uid://blcjfxlxa31xx" path="res://src/battle/enemy_in_battle.tscn" id="2_wssn5"]
 [ext_resource type="PackedScene" uid="uid://bj7thskyggr24" path="res://src/battle/hand.tscn" id="3_u3ckx"]
 
-[node name="Battle" type="Node2D" unique_id=250436248]
+[node name="Battle" type="Node2D" unique_id=250436248 node_paths=PackedStringArray("enemy_container", "spawn_positions")]
 script = ExtResource("1_wssn5")
+enemy_container = NodePath("Enemys")
+spawn_positions = [NodePath("Marker/Marker2D"), NodePath("Marker/Marker2D2"), NodePath("Marker/Marker2D3")]
 
 [node name="Background" type="CanvasLayer" parent="." unique_id=413745224]
 layer = -10
@@ -14,8 +15,19 @@ layer = -10
 [node name="PlayerInBattle" parent="." unique_id=270825366 instance=ExtResource("1_ewtd0")]
 position = Vector2(-13, 66)
 
-[node name="EnemyInBattle" parent="." unique_id=2066354428 instance=ExtResource("2_wssn5")]
-position = Vector2(35, 61)
+[node name="Enemys" type="Node2D" parent="." unique_id=809332175]
+z_index = 10
+
+[node name="Marker" type="Node2D" parent="." unique_id=1963761707]
+
+[node name="Marker2D" type="Marker2D" parent="Marker" unique_id=1070361101]
+position = Vector2(768, 384)
+
+[node name="Marker2D2" type="Marker2D" parent="Marker" unique_id=1551218520]
+position = Vector2(848, 432)
+
+[node name="Marker2D3" type="Marker2D" parent="Marker" unique_id=67665318]
+position = Vector2(928, 384)
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1180394887]
 

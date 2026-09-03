@@ -32,14 +32,29 @@ static var effect_registry: Dictionary = {
 	"clean_debuffs": { "method": _fx_clean_debuffs, "icon": null }
 }
 
-static func process_card(card_data: CardData, battle: Battle) -> void:
+static func process_card(card_data: CardData, battle: Battle, selected_target: EnemyInBattle = null) -> void:
 	var final_dmg = _calculate_modified_damage(card_data.dmg, battle)
 	var final_shield = _calculate_modified_shield(card_data.shild, battle)
 	
 	if final_dmg > 0:
 		battle.player.play_attack()
-		battle.enemy.take_damage(final_dmg)
-		
+		match card_data.target_type:
+			CardData.TargetType.ENEMY:
+				if is_instance_valid(selected_target):
+					selected_target.take_damage(final_dmg)
+				elif is_instance_valid(battle.selected_enemy_target):
+					battle.selected_enemy_target.take_damage(final_dmg)
+				else:
+					print("Предупреждение: Нет выбранной цели для одиночной атаки!")
+					
+			CardData.TargetType.ALL_ENEMIES:
+				for enemy in battle.enemies:
+					if is_instance_valid(enemy) and enemy.hp > 0:
+						enemy.take_damage(final_dmg)
+						
+				if is_instance_valid(selected_target):
+					selected_target.take_damage(final_dmg)
+
 	if final_shield > 0:
 		battle.player.add_block(final_shield)
 		
@@ -52,7 +67,7 @@ static func process_card(card_data: CardData, battle: Battle) -> void:
 		var effect_id = effect.get("id", "")
 		
 		if effect_registry.has(effect_id):
-			effect_registry[effect_id]["method"].call(battle, effect)
+			effect_registry[effect_id]["method"].call(battle, effect, selected_target)
 			_update_ui_effects(battle, effect_id)
 		else:
 			print("Эффект не найден: ", effect_id)
@@ -102,40 +117,46 @@ static func calculate_dynamic_card_cost(card_data: CardData, battle: Battle) -> 
 		return max(0, card_data.cost - reduction)
 	return card_data.cost
 
-static func _fx_set_infection_magical_girl(battle: Battle, _effect: Dictionary) -> void:
+static func _fx_set_infection_magical_girl(battle: Battle, _effect: Dictionary, _target: EnemyInBattle) -> void:
 	battle.active_infection = "inf_magical_girl"
 	print("Заражение: Девочка-волшебница успешно активировано.")
 
-static func _fx_gain_charge(battle: Battle, _effect: Dictionary) -> void:
+static func _fx_gain_charge(battle: Battle, _effect: Dictionary, _target: EnemyInBattle) -> void:
 	battle.magical_charge += 1
 	print(battle.magical_charge)
 
-static func _fx_gain_charge_2(battle: Battle, _effect: Dictionary) -> void:
+static func _fx_gain_charge_2(battle: Battle, _effect: Dictionary, _target: EnemyInBattle) -> void:
 	battle.magical_charge += 2
 	print(battle.magical_charge)
 
-static func _fx_gain_charge_per_hit(battle: Battle, _effect: Dictionary) -> void:
-	battle.magical_charge += 1
-	print(battle.magical_charge)
+static func _fx_gain_charge_per_hit(battle: Battle, _effect: Dictionary, _target: EnemyInBattle) -> void:
+	var alive_enemies_count := 0
+	for enemy in battle.enemies:
+		if is_instance_valid(enemy) and enemy.hp > 0:
+			alive_enemies_count += 1
+	battle.magical_charge += alive_enemies_count
+	print(alive_enemies_count," ",  battle.magical_charge)
 
-static func _fx_spend_all_energy_for_charge(battle: Battle, _effect: Dictionary) -> void:
+static func _fx_spend_all_energy_for_charge(battle: Battle, _effect: Dictionary, _target: EnemyInBattle) -> void:
 	var left_energy = battle.player.energy
 	battle.player.spend_energy(left_energy)
 	battle.magical_charge += left_energy * 2
 	print(battle.magical_charge)
 
-static func _fx_double_dmg_if_charge_5(battle: Battle, _effect: Dictionary) -> void:
+static func _fx_double_dmg_if_charge_5(battle: Battle, _effect: Dictionary, target: EnemyInBattle) -> void:
 	if battle.magical_charge > 5:
 		battle.magical_charge -= 3
 		print(battle.magical_charge)
-		battle.enemy.take_damage(10)
+		var active_target = target if is_instance_valid(target) else battle.selected_enemy_target
+		if is_instance_valid(active_target):
+			active_target.take_damage(10)
 
-static func _fx_draw_card(battle: Battle, _effect: Dictionary) -> void:
+static func _fx_draw_card(battle: Battle, _effect: Dictionary, _target: EnemyInBattle) -> void:
 	battle.draw_cards(1)
 
-static func _fx_draw_3(battle: Battle, _effect: Dictionary) -> void:
+static func _fx_draw_3(battle: Battle, _effect: Dictionary, _target: EnemyInBattle) -> void:
 	battle.draw_cards(3)
 
-static func _fx_clean_debuffs(battle: Battle, _effect: Dictionary) -> void:
+static func _fx_clean_debuffs(battle: Battle, _effect: Dictionary, _target: EnemyInBattle) -> void:
 	if battle.player.has_method("clear_debuffs"):
 		battle.player.clear_debuffs()

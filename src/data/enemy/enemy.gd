@@ -1,9 +1,8 @@
 class_name Enemy
 extends Area2D
 
-signal player_detected(enemy_data: EnemyData)
-
-@export var enemy_data: EnemyData
+signal player_detected(enemy_group: EnemyGroup)
+@export var enemy_group: EnemyGroup
 
 func _ready() -> void:
 	_check_if_defeated()
@@ -15,6 +14,11 @@ func _check_if_defeated() -> void:
 
 func _on_body_entered(body: Node2D) -> void:
 	if body is Player:
-		player_detected.emit(enemy_data)
-		GameState.current_enemy_node_name = name
-		print(name)
+		if enemy_group and not enemy_group.enemies.is_empty():
+			GameState.current_enemies = enemy_group.enemies.duplicate()
+			GameState.current_enemy_node_name = name
+			player_detected.emit(enemy_group)
+			
+			print("Игрок столкнулся с группой врагов на узле: ", name)
+		else:
+			push_error("Ошибка: У узла " + name + " не задан EnemyGroup или в нем нет врагов!")

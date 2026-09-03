@@ -1,12 +1,14 @@
 [gd_scene format=3 uid="uid://db6bmj0sriik1"]
 
 [ext_resource type="Script" uid="uid://bfpi5dalp4xgv" path="res://src/data/enemy/enemy.gd" id="1_tkbbh"]
+[ext_resource type="Resource" uid="uid://r2nw4f0yhxlf" path="res://src/data/enemy/test_group.tres" id="2_7e66e"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_bhunq"]
 radius = 114.00439
 
 [node name="Enemy" type="Area2D" unique_id=1142740305]
 script = ExtResource("1_tkbbh")
+enemy_group = ExtResource("2_7e66e")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1803948255]
 position = Vector2(26, 36)

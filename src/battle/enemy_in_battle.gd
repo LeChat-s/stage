@@ -11,6 +11,7 @@ signal died
 @onready var block_text: Label = $Block
 @onready var intent_text: Label = $Intent
 @onready var hp_text: Label = $HPBar/HPText
+@onready var enemy_sprite: Sprite2D = $EnemySprite 
 
 var hp: int
 var max_hp: int
@@ -19,12 +20,29 @@ var actions: Array[String] = []
 var action_index: int = 0
 var damage_popup_scene: PackedScene = preload("res://src/ui/dmg_popups.tscn")
 
+func _ready() -> void:
+	var click_zone = $Area2D
+	if click_zone:
+		click_zone.input_event.connect(_on_click_zone_input_event)
+
 func setup(enemy_data: EnemyData) -> void:
 	max_hp = enemy_data.max_hp
 	hp = max_hp
 	actions = enemy_data.actions
+	if enemy_sprite and enemy_data.sprite:
+		enemy_sprite.texture = enemy_data.sprite
+		enemy_sprite.visible = true
+	else:
+		print("Предупреждение: Спрайт не найден или в EnemyData отсутствует текстура!")
+		
 	emit_signals()
 	show_intent()
+
+func _on_click_zone_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		var battle_scene = get_tree().current_scene as Battle
+		if battle_scene:
+			battle_scene.select_new_target(self)
 
 func take_damage(amount: int, effect_name: String = "default_attack") -> void:
 	if damage_popup_scene:
@@ -52,6 +70,11 @@ func take_damage(amount: int, effect_name: String = "default_attack") -> void:
 	emit_signals()
 	if hp <= 0:
 		died.emit()
+		enemy_sprite.visible = false
+		attack_effect.visible = true
+		attack_effect.play("mushroom_die")
+		await attack_effect.animation_finished
+		queue_free()
 	
 func add_block(amount: int) -> void:
 	block += amount
@@ -104,3 +127,9 @@ func _on_block_changed(amount: int) -> void:
 
 func _on_intent_changed(text: String) -> void:
 	intent_text.text = text
+
+func set_highlight(active: bool) -> void:
+	if active:
+		modulate = Color(1.5, 1.5, 1.2, 1.0)
+	else:
+		modulate = Color.WHITE 
