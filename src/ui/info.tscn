@@ -3,7 +3,13 @@
 [ext_resource type="Script" uid="uid://dojwflcy0y74l" path="res://src/ui/info.gd" id="1_4edvv"]
 [ext_resource type="Texture2D" uid="uid://baid6i7f70kbr" path="res://assets/info/Д-13.png" id="1_kg4k8"]
 [ext_resource type="Texture2D" uid="uid://bo4rc5ii0v1hv" path="res://assets/info/СКРЕПКА.png" id="2_4edvv"]
+[ext_resource type="Texture2D" uid="uid://onfws84je40g" path="res://assets/texture/first_bookmark.png" id="2_hewvi"]
 [ext_resource type="FontFile" uid="uid://c35xg7jni7v5p" path="res://assets/fonts/PixeloidSans.ttf" id="2_shk28"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_u8r55"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_l5buv"]
+texture = ExtResource("2_hewvi")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4edvv"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -23,8 +29,14 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 357.0
+offset_top = 2.0
+offset_right = -295.0
+offset_bottom = 2.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_u8r55")
+theme_override_styles/tab_hovered = SubResource("StyleBoxTexture_l5buv")
 current_tab = 0
 
 [node name="Stats" type="Control" parent="TabContainer" unique_id=1424013082]
@@ -35,13 +47,12 @@ metadata/_tab_index = 0
 custom_minimum_size = Vector2(500, 600)
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.28300002
 anchor_top = 0.014
-anchor_right = 0.717
+anchor_right = 1.0
 anchor_bottom = 0.98600006
-offset_left = -0.016021729
+offset_left = 141.484
 offset_top = -0.13800049
-offset_right = 0.015991211
+offset_right = -141.48401
 offset_bottom = 0.13793945
 grow_horizontal = 2
 grow_vertical = 2
@@ -61,27 +72,28 @@ theme_override_fonts/font = ExtResource("2_shk28")
 theme_override_styles/normal = SubResource("StyleBoxFlat_4edvv")
 
 [node name="Portret" type="TextureRect" parent="TabContainer/Stats" unique_id=504200828]
+custom_minimum_size = Vector2(110, 0)
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.596
-anchor_top = 0.024
-anchor_right = 0.697
-anchor_bottom = 0.266
-offset_left = 0.40795898
-offset_top = 0.19199944
-offset_right = 0.05596924
+anchor_left = 0.71000004
+anchor_top = 0.028
+anchor_right = 0.93000007
+anchor_bottom = 0.26924148
+offset_left = -3.0517578e-05
+offset_top = -0.27600098
 offset_bottom = -0.12199402
 texture = ExtResource("1_kg4k8")
 expand_mode = 1
 metadata/_edit_use_anchors_ = true
 
 [node name="TextureRect" type="TextureRect" parent="TabContainer/Stats" unique_id=105842571]
+custom_minimum_size = Vector2(85, 0)
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.62700003
-anchor_top = 0.003
-anchor_right = 0.698
-anchor_bottom = 0.194
+anchor_left = 0.77860796
+anchor_top = 0.015965965
+anchor_right = 0.94819194
+anchor_bottom = 0.20696597
 offset_left = -0.3040161
 offset_top = 0.14899993
 offset_right = -0.0960083
