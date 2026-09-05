@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://pyou6t5qympo" path="res://src/data/enemy/enemy_data.gd" id="1_8knkl"]
 [ext_resource type="Texture2D" uid="uid://dupy45wsjnccj" path="res://assets/enemy/mushroom/mushroom.png" id="2_e1s82"]
+[ext_resource type="Texture2D" uid="uid://dyu8kwe2gwrqo" path="res://assets/texture/third_bookmark.png" id="3_hyk01"]
 
 [resource]
 script = ExtResource("1_8knkl")
@@ -9,4 +10,7 @@ id = "test1"
 name = "Тестовый чел ГОрбушка"
 actions = Array[String](["attack:8", "defend:5"])
 sprite = ExtResource("2_e1s82")
+phase = 1
+two_phase_actions = Array[String](["attack:10", "defend:8"])
+two_phase_sprite = ExtResource("3_hyk01")
 metadata/_custom_type_script = "uid://pyou6t5qympo"

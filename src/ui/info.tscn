@@ -3,13 +3,11 @@
 [ext_resource type="Script" uid="uid://dojwflcy0y74l" path="res://src/ui/info.gd" id="1_4edvv"]
 [ext_resource type="Texture2D" uid="uid://baid6i7f70kbr" path="res://assets/info/Д-13.png" id="1_kg4k8"]
 [ext_resource type="Texture2D" uid="uid://bo4rc5ii0v1hv" path="res://assets/info/СКРЕПКА.png" id="2_4edvv"]
+[ext_resource type="Texture2D" uid="uid://clwjn7y8vem8j" path="res://assets/texture/notebook.png" id="2_b1vc6"]
 [ext_resource type="Texture2D" uid="uid://onfws84je40g" path="res://assets/texture/first_bookmark.png" id="2_hewvi"]
 [ext_resource type="FontFile" uid="uid://c35xg7jni7v5p" path="res://assets/fonts/PixeloidSans.ttf" id="2_shk28"]
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_u8r55"]
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_l5buv"]
-texture = ExtResource("2_hewvi")
+[ext_resource type="Texture2D" uid="uid://nd17a43okfr5" path="res://assets/texture/sekond_bookmark.png" id="6_rqg5e"]
+[ext_resource type="Texture2D" uid="uid://dyu8kwe2gwrqo" path="res://assets/texture/third_bookmark.png" id="7_b1vc6"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4edvv"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -24,90 +22,117 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_4edvv")
 
-[node name="TabContainer" type="TabContainer" parent="." unique_id=1956597169]
+[node name="Paper" type="TextureRect" parent="." unique_id=1784539017]
+custom_minimum_size = Vector2(350, 500)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.31
+anchor_top = 0.034
+anchor_right = 0.74500006
+anchor_bottom = 0.96000004
+offset_left = 46.880005
+offset_top = 29.967999
+offset_right = -37.24005
+offset_bottom = -40.080017
+texture = ExtResource("2_b1vc6")
+
+[node name="Stats" type="Control" parent="Paper" unique_id=1424013082]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 357.0
-offset_top = 2.0
-offset_right = -295.0
-offset_bottom = 2.0
+offset_top = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxTexture_u8r55")
-theme_override_styles/tab_hovered = SubResource("StyleBoxTexture_l5buv")
-current_tab = 0
 
-[node name="Stats" type="Control" parent="TabContainer" unique_id=1424013082]
-layout_mode = 2
-metadata/_tab_index = 0
-
-[node name="Paper" type="ColorRect" parent="TabContainer/Stats" unique_id=346692288]
-custom_minimum_size = Vector2(500, 600)
+[node name="Portret" type="TextureRect" parent="Paper/Stats" unique_id=504200828]
+texture_filter = 1
+texture_repeat = 1
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 1
 anchors_preset = -1
-anchor_top = 0.014
-anchor_right = 1.0
-anchor_bottom = 0.98600006
-offset_left = 141.484
-offset_top = -0.13800049
-offset_right = -141.48401
-offset_bottom = 0.13793945
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.90235776, 0.9023578, 0.90235776, 1)
+anchor_left = 0.6882495
+anchor_top = 0.017534968
+anchor_right = 0.9280576
+anchor_bottom = 0.25877646
+offset_left = -3.0517578e-05
+offset_top = -0.27600098
+offset_bottom = -0.12199402
+texture = ExtResource("1_kg4k8")
+expand_mode = 3
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
 
-[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Stats/Paper" unique_id=1760687508]
-layout_mode = 0
-offset_left = 39.0
-offset_top = 40.5
-offset_right = 258.0
-offset_bottom = 370.0
+[node name="TextureRect" type="TextureRect" parent="Paper/Stats" unique_id=105842571]
+custom_minimum_size = Vector2(85, 0)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.73694015
+anchor_top = -0.00028166565
+anchor_right = 0.9400481
+anchor_bottom = 0.1973227
+offset_left = -0.3040161
+offset_top = 0.14900017
+offset_right = -3.0517578e-05
+offset_bottom = -0.21601105
+texture = ExtResource("2_4edvv")
+expand_mode = 1
+metadata/_edit_use_anchors_ = true
 
-[node name="HPLabel" type="Label" parent="TabContainer/Stats/Paper/VBoxContainer" unique_id=719677830]
+[node name="VBoxContainer" type="VBoxContainer" parent="Paper/Stats" unique_id=1760687508]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.11000001
+anchor_top = 0.076000005
+anchor_right = 0.63500005
+anchor_bottom = 0.54700005
+offset_left = 0.12999725
+offset_top = -0.20400238
+offset_right = -0.1210022
+offset_bottom = -0.1880188
+
+[node name="HPLabel" type="Label" parent="Paper/Stats/VBoxContainer" unique_id=719677830]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.000116873845, 0.0036796737, 0.0008242075, 1)
 theme_override_fonts/font = ExtResource("2_shk28")
 theme_override_styles/normal = SubResource("StyleBoxFlat_4edvv")
 
-[node name="Portret" type="TextureRect" parent="TabContainer/Stats" unique_id=504200828]
-custom_minimum_size = Vector2(110, 0)
+[node name="bookmark" type="Control" parent="Paper" unique_id=1922707210]
 layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.71000004
-anchor_top = 0.028
-anchor_right = 0.93000007
-anchor_bottom = 0.26924148
-offset_left = -3.0517578e-05
-offset_top = -0.27600098
-offset_bottom = -0.12199402
-texture = ExtResource("1_kg4k8")
-expand_mode = 1
-metadata/_edit_use_anchors_ = true
+anchor_top = -0.051000003
+anchor_right = 1.0
+offset_top = 0.030000687
 
-[node name="TextureRect" type="TextureRect" parent="TabContainer/Stats" unique_id=105842571]
-custom_minimum_size = Vector2(85, 0)
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.77860796
-anchor_top = 0.015965965
-anchor_right = 0.94819194
-anchor_bottom = 0.20696597
-offset_left = -0.3040161
-offset_top = 0.14899993
-offset_right = -0.0960083
-offset_bottom = 0.30199432
-texture = ExtResource("2_4edvv")
-expand_mode = 1
-metadata/_edit_use_anchors_ = true
+[node name="stats" type="TextureButton" parent="Paper/bookmark" unique_id=464303244]
+layout_mode = 0
+offset_left = 50.0
+offset_top = -4.0
+offset_right = 70.0
+offset_bottom = 34.0
+texture_normal = ExtResource("2_hewvi")
+ignore_texture_size = true
+stretch_mode = 0
 
-[node name="Card_info" type="Control" parent="TabContainer" unique_id=559482009]
-visible = false
-layout_mode = 2
-metadata/_tab_index = 1
+[node name="deck" type="TextureButton" parent="Paper/bookmark" unique_id=170304732]
+layout_mode = 0
+offset_left = 79.0
+offset_top = -6.0
+offset_right = 100.0
+offset_bottom = 34.0
+texture_normal = ExtResource("6_rqg5e")
+ignore_texture_size = true
+stretch_mode = 0
 
-[node name="Deck" type="Control" parent="TabContainer" unique_id=624032014]
-visible = false
-layout_mode = 2
-metadata/_tab_index = 2
+[node name="card_info" type="TextureButton" parent="Paper/bookmark" unique_id=248208830]
+layout_mode = 0
+offset_left = 117.0
+offset_top = -6.0
+offset_right = 137.0
+offset_bottom = 34.0
+texture_normal = ExtResource("7_b1vc6")
+ignore_texture_size = true
+stretch_mode = 0
+
+[connection signal="pressed" from="Paper/bookmark/stats" to="." method="_on_stats_pressed"]
+[connection signal="pressed" from="Paper/bookmark/deck" to="." method="_on_deck_pressed"]
+[connection signal="pressed" from="Paper/bookmark/card_info" to="." method="_on_card_info_pressed"]

@@ -3,6 +3,9 @@
 [ext_resource type="PackedScene" uid="uid://bqms3dqo57s73" path="res://src/battle/player_in_battle.tscn" id="1_ewtd0"]
 [ext_resource type="Script" uid="uid://dfbnl3yl6n6q3" path="res://src/battle/battle.gd" id="1_wssn5"]
 [ext_resource type="PackedScene" uid="uid://bj7thskyggr24" path="res://src/battle/hand.tscn" id="3_u3ckx"]
+[ext_resource type="Texture2D" uid="uid://dyu8kwe2gwrqo" path="res://assets/texture/third_bookmark.png" id="4_u3ckx"]
+[ext_resource type="Texture2D" uid="uid://onfws84je40g" path="res://assets/texture/first_bookmark.png" id="5_80tbf"]
+[ext_resource type="PackedScene" uid="uid://bdsdigf1um2od" path="res://src/data/cards/card_inspector.tscn" id="6_80tbf"]
 
 [node name="Battle" type="Node2D" unique_id=250436248 node_paths=PackedStringArray("enemy_container", "spawn_positions")]
 script = ExtResource("1_wssn5")
@@ -38,16 +41,26 @@ offset_right = 587.0
 offset_bottom = 515.0
 
 [node name="DeckLabel" type="Label" parent="UI" unique_id=721929141]
-offset_left = 27.0
-offset_top = 529.0
-offset_right = 150.0
-offset_bottom = 601.0
+anchors_preset = -1
+anchor_left = 0.028
+anchor_top = 0.79
+anchor_right = 0.135
+anchor_bottom = 0.901
+offset_left = -0.25600052
+offset_top = 0.07998657
+offset_right = -0.5200043
+offset_bottom = 0.15197754
 
 [node name="DiscardLabel" type="Label" parent="UI" unique_id=1211916138]
-offset_left = 939.0
-offset_top = 526.0
-offset_right = 1062.0
-offset_bottom = 598.0
+anchors_preset = -1
+anchor_left = 0.87500006
+anchor_top = 0.72800004
+anchor_right = 0.98200005
+anchor_bottom = 0.84000003
+offset_left = -6.1035156e-05
+offset_top = 0.25598145
+offset_right = -0.2640381
+offset_bottom = -0.32000732
 
 [node name="EndTurnButton" type="Button" parent="UI" unique_id=2025636770]
 offset_left = 533.0
@@ -55,3 +68,47 @@ offset_top = 594.0
 offset_right = 618.0
 offset_bottom = 638.0
 text = "End"
+
+[node name="DeckButton" type="TextureButton" parent="UI" unique_id=1193450441]
+anchors_preset = -1
+anchor_left = 0.028
+anchor_top = 0.827
+anchor_right = 0.062000003
+anchor_bottom = 0.88900006
+offset_left = -0.25600052
+offset_top = 0.104003906
+offset_right = 0.5759964
+offset_bottom = -0.072021484
+texture_normal = ExtResource("4_u3ckx")
+
+[node name="CountLabel" type="Label" parent="UI/DeckButton" unique_id=1535837939]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="DiscardButton" type="TextureButton" parent="UI" unique_id=15973015]
+anchors_preset = -1
+anchor_left = 0.91700006
+anchor_top = 0.80200005
+anchor_right = 0.95100003
+anchor_bottom = 0.88000005
+offset_left = -0.3840332
+offset_top = 0.30395508
+offset_right = 0.44799805
+offset_bottom = -0.24005127
+texture_normal = ExtResource("5_80tbf")
+
+[node name="CountLabel" type="Label" parent="UI/DiscardButton" unique_id=1228390804]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="CardInspector" parent="UI" unique_id=1669125836 instance=ExtResource("6_80tbf")]
+visible = false
+offset_left = 384.0
+offset_top = 48.0
+offset_right = 884.0
+offset_bottom = 448.0
+
+[connection signal="pressed" from="UI/DeckButton" to="." method="_on_deck_button_pressed"]
+[connection signal="pressed" from="UI/DiscardButton" to="." method="_on_discard_button_pressed"]

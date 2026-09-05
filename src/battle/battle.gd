@@ -6,6 +6,11 @@ extends Node2D
 @onready var deck_label: Label = $UI/DeckLabel
 @onready var discard_label: Label = $UI/DiscardLabel
 @onready var end_turn_button: Button = $UI/EndTurnButton
+@onready var deck_button: TextureButton = $UI/DeckButton
+@onready var discard_button: TextureButton = $UI/DiscardButton
+@onready var inspector_panel: PanelContainer = $UI/CardInspector
+@onready var deck_count_label: Label = $UI/DeckButton/CountLabel
+@onready var discard_count_label: Label = $UI/DiscardButton/CountLabel
 
 @export var enemy_container: Node2D
 @export var enemy_prefab: PackedScene = preload("res://src/battle/enemy_in_battle.tscn")
@@ -174,8 +179,8 @@ func _check_battle_victory() -> void:
 		print("Ошибка: Не удалось получить доступ к SceneTree для смены сцены")
 
 func _update_pipe_labels() -> void:
-	deck_label.text = "Колода: " + str(deck.size())
-	discard_label.text = "Сброс: " + str(discard_pile.size())
+	deck_count_label.text = str(deck.size())
+	discard_count_label.text = str(discard_pile.size())
 
 func highlight_targets_for_type(target_type: CardData.TargetType) -> void:
 	clear_all_highlights()
@@ -212,3 +217,12 @@ func select_new_target(new_target: EnemyInBattle) -> void:
 	print("Игрок выбрал новую цель: ", new_target.name)
 	clear_all_highlights()
 	selected_enemy_target.set_highlight(true)
+
+
+func _on_deck_button_pressed() -> void:
+	if deck.size() > 0:
+		inspector_panel.open("Содержимое колоды", deck)
+
+func _on_discard_button_pressed() -> void:
+	if discard_pile.size() > 0:
+		inspector_panel.open("Стопка сброса", discard_pile)

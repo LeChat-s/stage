@@ -1,7 +1,7 @@
 class_name Info
 extends Control
 
-@onready var hp_label: Label = $TabContainer/Stats/Paper/VBoxContainer/HPLabel
+@onready var hp_label: Label = $Paper/Stats/VBoxContainer/HPLabel
 
 func _ready() -> void:
 	visibility_changed.connect(_on_visibility_changed)
@@ -24,3 +24,13 @@ func _find_player_by_class(node: Node) -> PlayerInBattle:
 		if result:
 			return result
 	return null
+
+
+func _on_stats_pressed() -> void:
+	print("статы")
+
+func _on_deck_pressed() -> void:
+	print("колода")
+
+func _on_card_info_pressed() -> void:
+	print("инфа по картам")

@@ -15,10 +15,13 @@ signal died
 
 var hp: int
 var max_hp: int
+var two_phase_hp: int
+var phase: int
 var block: int
 var actions: Array[String] = []
 var action_index: int = 0
 var damage_popup_scene: PackedScene = preload("res://src/ui/dmg_popups.tscn")
+var current_enemy_data: EnemyData 
 
 func _ready() -> void:
 	var click_zone = $Area2D
@@ -26,15 +29,30 @@ func _ready() -> void:
 		click_zone.input_event.connect(_on_click_zone_input_event)
 
 func setup(enemy_data: EnemyData) -> void:
+	current_enemy_data = enemy_data
 	max_hp = enemy_data.max_hp
 	hp = max_hp
+	two_phase_hp = enemy_data.two_phase_hp
+	phase = enemy_data.phase
 	actions = enemy_data.actions
 	if enemy_sprite and enemy_data.sprite:
 		enemy_sprite.texture = enemy_data.sprite
 		enemy_sprite.visible = true
 	else:
 		print("Предупреждение: Спрайт не найден или в EnemyData отсутствует текстура!")
-		
+	emit_signals()
+	show_intent()
+
+func resetup(enemy_data:EnemyData) -> void:
+	max_hp = enemy_data.two_phase_hp
+	hp = max_hp
+	phase = 0
+	actions = enemy_data.two_phase_actions
+	if enemy_sprite and enemy_data.two_phase_sprite:
+		enemy_sprite.texture = enemy_data.two_phase_sprite
+		enemy_sprite.visible = true
+	else:
+		print("Предупреждение: Спрайт не найден или в EnemyData отсутствует текстура для второй фазы!")
 	emit_signals()
 	show_intent()
 
@@ -70,11 +88,15 @@ func take_damage(amount: int, effect_name: String = "default_attack") -> void:
 	emit_signals()
 	if hp <= 0:
 		died.emit()
-		enemy_sprite.visible = false
-		attack_effect.visible = true
-		attack_effect.play("mushroom_die")
-		await attack_effect.animation_finished
-		queue_free()
+		if phase > 0:
+			resetup(current_enemy_data) 
+			print("вторая фаза")
+		else:
+			enemy_sprite.visible = false
+			attack_effect.visible = true
+			attack_effect.play("mushroom_die")
+			await attack_effect.animation_finished
+			queue_free()
 	
 func add_block(amount: int) -> void:
 	block += amount
@@ -88,15 +110,17 @@ func get_next_action() -> String:
 	return action
 
 func execute_action(action: String, target: PlayerInBattle) -> void:
+	block = 0 
+	
 	var parts = action.split(":")
 	var action_type = parts[0]
 	var value = int(parts[1])
+	
 	match action_type:
 		"attack":
 			target.take_damage(value)
 		"defend":
 			add_block(value)
-	block = 0
 	show_intent()
 
 func show_intent() -> void:
