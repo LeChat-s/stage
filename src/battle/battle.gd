@@ -15,6 +15,7 @@ extends Node2D
 @export var enemy_container: Node2D
 @export var enemy_prefab: PackedScene = preload("res://src/battle/enemy_in_battle.tscn")
 @export var spawn_positions: Array[Marker2D] = []
+@export var enemy_catalog: EnemyCatalog
 
 var enemies: Array[EnemyInBattle] = []
 var deck: Array[CardData] = []
@@ -68,6 +69,46 @@ func _spawn_enemies_from_state() -> void:
 			selected_enemy_target = enemy_instance
 		enemies.append(enemy_instance)
 
+func summon_minion(minion_id: int) -> void:
+	var free_marker_index: int = -1
+	for i in range(spawn_positions.size()):
+		var is_occupied = false
+		for enemy in enemies:
+			if is_instance_valid(enemy):
+				if enemy.has_meta("spawn_marker_index") and enemy.get_meta("spawn_marker_index") == i:
+					is_occupied = true
+					break
+				elif enemy.global_position.distance_to(spawn_positions[i].global_position) < 10.0:
+					is_occupied = true
+					break
+		if not is_occupied:
+			free_marker_index = i
+			break
+			
+	if free_marker_index == -1:
+		print("Не удалось призвать миньона: все маркеры заняты!")
+		return
+	var minion_data: EnemyData = _get_minion_data_by_id(minion_id)
+	if not minion_data:
+		print("Ошибка: Не найдены EnemyData для миньона с ID: ", minion_id)
+		return
+		
+	var minion_instance = enemy_prefab.instantiate() as EnemyInBattle
+	var target_marker = spawn_positions[free_marker_index]
+	minion_instance.global_position = target_marker.global_position
+	minion_instance.set_meta("spawn_marker_index", free_marker_index)
+	enemy_container.add_child(minion_instance)
+	minion_instance.setup(minion_data)
+	minion_instance.died.connect(_on_enemy_died.bind(minion_instance))
+	enemies.append(minion_instance)
+	print("Миньон успешно призван на маркер: ", target_marker.name, " (Индекс: ", free_marker_index, ")")
+
+func _get_minion_data_by_id(id: int) -> EnemyData:
+	if enemy_catalog:
+		return enemy_catalog.get_enemy_data(id)
+	print("enemy_catalog отсутствует")
+	return null
+	
 func _start_player_turn() -> void:
 	player.reset_turn()
 	_apply_infection_turn_start_effects()
@@ -117,7 +158,6 @@ func _on_card_selected(card_data: CardData) -> void:
 	_refresh_hand()
 	_update_pipe_labels()
 
-
 func _refresh_hand() -> void:
 	hand.clear_hand()
 	for card in current_hand:
@@ -135,7 +175,8 @@ func _on_end_turn() -> void:
 	current_hand.clear()
 	hand.clear_hand()
 	
-	for current_enemy in enemies:
+	var current_enemies = enemies.duplicate()
+	for current_enemy in current_enemies:
 		if not is_instance_valid(current_enemy) or current_enemy.hp <= 0:
 			continue
 			
@@ -149,7 +190,7 @@ func _on_end_turn() -> void:
 
 func _on_player_died() -> void:
 	print("игрок мертв") 
-	get_tree().change_scene_to_file("res://src/world/test_lvl.tscn")
+	get_tree().change_scene_to_file("res://src/world/prologue.tscn")
 
 func _on_enemy_died(dead_enemy: EnemyInBattle) -> void:
 	print("Враг умер: ", dead_enemy.name)
@@ -174,7 +215,7 @@ func _check_battle_victory() -> void:
 	await get_tree().create_timer(1.0).timeout
 	var tree = Engine.get_main_loop() as SceneTree
 	if tree:
-		tree.change_scene_to_file("res://src/world/test_lvl.tscn")
+		tree.change_scene_to_file("res://src/world/prologue.tscn")
 	else:
 		print("Ошибка: Не удалось получить доступ к SceneTree для смены сцены")
 
@@ -218,11 +259,14 @@ func select_new_target(new_target: EnemyInBattle) -> void:
 	clear_all_highlights()
 	selected_enemy_target.set_highlight(true)
 
-
 func _on_deck_button_pressed() -> void:
 	if deck.size() > 0:
 		inspector_panel.open("Содержимое колоды", deck)
+	else:
+		inspector_panel.hide()
 
 func _on_discard_button_pressed() -> void:
 	if discard_pile.size() > 0:
 		inspector_panel.open("Стопка сброса", discard_pile)
+	else:
+		inspector_panel.hide()

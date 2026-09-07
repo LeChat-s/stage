@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://b2jtgbdqhvsiq"]
+
+[ext_resource type="Script" uid="uid://pyou6t5qympo" path="res://src/data/enemy/enemy_data.gd" id="1_l7otd"]
+[ext_resource type="Texture2D" uid="uid://crk6i4talryn3" path="res://assets/enemy/a1/A-1_1_phase.png" id="2_5ld21"]
+[ext_resource type="Texture2D" uid="uid://dcwh5dbdr145s" path="res://assets/enemy/a1/A-1_2_phase.png" id="3_u2xbp"]
+
+[resource]
+script = ExtResource("1_l7otd")
+id = "boss1"
+name = "А-1"
+max_hp = 250
+actions = Array[String](["summon:1", "summon:1", "self_buff:3", "buff_minions:10", "attack:20"])
+sprite = ExtResource("2_5ld21")
+phase = 1
+two_phase_hp = 400
+two_phase_actions = Array[String](["attack:5", "attack:6", "attack:7", "attack:8", "attack:9"])
+two_phase_sprite = ExtResource("3_u2xbp")
+metadata/_custom_type_script = "uid://pyou6t5qympo"

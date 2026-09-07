@@ -6,7 +6,7 @@
 
 [resource]
 script = ExtResource("1_8knkl")
-id = "test1"
+id = "1"
 name = "Тестовый чел ГОрбушка"
 actions = Array[String](["attack:8", "defend:5"])
 sprite = ExtResource("2_e1s82")

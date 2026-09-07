@@ -4,8 +4,8 @@
 [ext_resource type="Script" uid="uid://dc4bfybn8tsib" path="res://src/world/prologue.gd" id="1_u1ir7"]
 [ext_resource type="PackedScene" uid="uid://du83lilcfeyfb" path="res://src/player/player.tscn" id="2_pw4xv"]
 [ext_resource type="PackedScene" uid="uid://db6bmj0sriik1" path="res://src/data/enemy/enemy.tscn" id="3_x7sps"]
-[ext_resource type="Texture2D" uid="uid://c2v2cyt38oo06" path="res://assets/vfx/light3.png" id="5_7moup"]
 [ext_resource type="Shader" uid="uid://cd4pobt4h10j8" path="res://src/world/prologue.gdshader" id="6_g3d6b"]
+[ext_resource type="Texture2D" uid="uid://dkeq5qwdw7fke" path="res://assets/vfx/light4.png" id="6_l5buv"]
 
 [sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_7moup"]
 polygon = PackedVector2Array(-32, 32, 32, 32, 32, 2, -32, 2)
@@ -91,16 +91,18 @@ position = Vector2(97, 519)
 
 [node name="Гарбушка" parent="." unique_id=1142740305 groups=["enemy"] instance=ExtResource("3_x7sps")]
 position = Vector2(736, 514)
+enemy_animation = "idle"
 
 [node name="Light" type="Node2D" parent="." unique_id=1264185128]
 
 [node name="1" type="PointLight2D" parent="Light" unique_id=1018063414]
-position = Vector2(161, 332)
+position = Vector2(161, 327.4)
+scale = Vector2(1, 0.985026)
 color = Color(0.12156863, 0.20784314, 0.3254902, 1)
 energy = 0.9
 shadow_enabled = true
 shadow_color = Color(0, 0, 0, 0.50980395)
-texture = ExtResource("5_7moup")
+texture = ExtResource("6_l5buv")
 texture_scale = 2.4
 
 [node name="2" type="PointLight2D" parent="Light" unique_id=1724659204]
@@ -109,34 +111,34 @@ color = Color(0.12156863, 0.20784314, 0.3254902, 1)
 energy = 0.9
 shadow_enabled = true
 shadow_color = Color(0, 0, 0, 0.50980395)
-texture = ExtResource("5_7moup")
+texture = ExtResource("6_l5buv")
 texture_scale = 2.4
 
 [node name="3" type="PointLight2D" parent="Light" unique_id=372015369]
-position = Vector2(548, 331)
+position = Vector2(547, 325)
 color = Color(0.12156863, 0.20784314, 0.3254902, 1)
 energy = 0.9
 shadow_enabled = true
 shadow_color = Color(0, 0, 0, 0.50980395)
-texture = ExtResource("5_7moup")
+texture = ExtResource("6_l5buv")
 texture_scale = 2.4
 
 [node name="4" type="PointLight2D" parent="Light" unique_id=639948986]
-position = Vector2(739, 335)
+position = Vector2(741, 325)
 color = Color(0.12156863, 0.20784314, 0.3254902, 1)
 energy = 0.9
 shadow_enabled = true
 shadow_color = Color(0, 0, 0, 0.50980395)
-texture = ExtResource("5_7moup")
+texture = ExtResource("6_l5buv")
 texture_scale = 2.4
 
 [node name="5" type="PointLight2D" parent="Light" unique_id=1881081620]
-position = Vector2(930, 342)
+position = Vector2(933, 326)
 color = Color(0.12156863, 0.20784314, 0.3254902, 1)
 energy = 0.9
 shadow_enabled = true
 shadow_color = Color(0, 0, 0, 0.50980395)
-texture = ExtResource("5_7moup")
+texture = ExtResource("6_l5buv")
 texture_scale = 2.4
 
 [node name="director" type="CanvasModulate" parent="Light" unique_id=2044598021]

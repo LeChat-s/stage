@@ -22,6 +22,8 @@ var actions: Array[String] = []
 var action_index: int = 0
 var damage_popup_scene: PackedScene = preload("res://src/ui/dmg_popups.tscn")
 var current_enemy_data: EnemyData 
+var buffs: Dictionary = {}
+var debuffs: Dictionary = {}
 
 func _ready() -> void:
 	var click_zone = $Area2D
@@ -110,33 +112,81 @@ func get_next_action() -> String:
 	return action
 
 func execute_action(action: String, target: PlayerInBattle) -> void:
-	block = 0 
-	
+	block = 0
 	var parts = action.split(":")
 	var action_type = parts[0]
 	var value = int(parts[1])
 	
+	var battle_scene = get_tree().current_scene as Battle
+
 	match action_type:
 		"attack":
-			target.take_damage(value)
+			var final_damage = value
+			if buffs.has("rage"):
+				final_damage += buffs["rage"]
+			target.take_damage(final_damage)
+			
 		"defend":
 			add_block(value)
+			
+		"summon":
+			if battle_scene and battle_scene.has_method("summon_minion"):
+				battle_scene.summon_minion(value)
+				
+		"debuff":
+			if target.has_method("apply_debuff"):
+				target.apply_debuff("weak", value)
+				
+		"self_buff":
+			buffs["rage"] = buffs.get("rage", 0) + value
+			print("Босс усилил себя! Текущая ярость: ", buffs["rage"])
+			
+		"buff_minions":
+			if battle_scene and battle_scene.has_node("Enemies"):
+				for enemy in battle_scene.get_node("Enemies").get_children():
+					if enemy != self and enemy.has_method("add_block"):
+						enemy.add_block(value) 
+						
+	tick_buffs()
 	show_intent()
+
 
 func show_intent() -> void:
 	if actions.is_empty():
 		intent_changed.emit("Атака: 5")
 		return
+		
 	var next_action = actions[action_index % actions.size()]
 	var parts = next_action.split(":")
 	var text = ""
+	
 	match parts[0]:
 		"attack":
-			text = "Атака: " + parts[1]
+			var dmg = int(parts[1])
+			if buffs.has("rage"):
+				dmg += buffs["rage"]
+			text = "Атака: " + str(dmg)
 		"defend":
 			text = "Защита: " + parts[1]
+		"summon":
+			text = "Призыв миньона"
+		"debuff":
+			text = "Ослабление игрока (Слабость: " + parts[1] + " х.)"
+		"self_buff":
+			text = "Концентрация (Атака +" + parts[1] + ")"
+		"buff_minions":
+			text = "Усиление миньонов (Блок +" + parts[1] + ")"
 	intent_changed.emit(text)
 
+func apply_debuff(debuff_name: String, duration: int) -> void:
+	debuffs[debuff_name] = debuffs.get(debuff_name, 0) + duration
+
+func tick_buffs() -> void:
+	for key in debuffs.keys():
+		debuffs[key] -= 1
+		if debuffs[key] <= 0:
+			debuffs.erase(key)
+			
 func emit_signals() -> void:
 	hp_changed.emit(hp, max_hp)
 	block_changed.emit(block)

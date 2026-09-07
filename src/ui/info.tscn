@@ -36,6 +36,17 @@ offset_right = -37.24005
 offset_bottom = -40.080017
 texture = ExtResource("2_b1vc6")
 
+[node name="CardsInfo" type="Control" parent="Paper" unique_id=1105809944]
+anchors_preset = 0
+offset_right = 414.0
+offset_bottom = 529.0
+
+[node name="Deck" type="Control" parent="Paper" unique_id=1482589825]
+anchors_preset = 0
+offset_top = 1.0
+offset_right = 40.0
+offset_bottom = 41.0
+
 [node name="Stats" type="Control" parent="Paper" unique_id=1424013082]
 layout_mode = 1
 anchors_preset = 15

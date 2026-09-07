@@ -26,8 +26,10 @@ size_flags_horizontal = 10
 text = "x"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer" unique_id=699732633]
+custom_minimum_size = Vector2(400, 400)
 layout_mode = 2
 
 [node name="Grid" type="GridContainer" parent="VBoxContainer/ScrollContainer" unique_id=287542578]
+custom_minimum_size = Vector2(400, 400)
 layout_mode = 2
 columns = 4

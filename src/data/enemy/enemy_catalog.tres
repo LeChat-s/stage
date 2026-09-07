@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="EnemyCatalog" format=3 uid="uid://dqu0npl4qype4"]
+
+[ext_resource type="Script" uid="uid://c2h4t76wmjj3l" path="res://src/data/enemy/enemy_catalog.gd" id="1_2kgc5"]
+[ext_resource type="Script" uid="uid://pyou6t5qympo" path="res://src/data/enemy/enemy_data.gd" id="1_r6olx"]
+[ext_resource type="Resource" uid="uid://bwjjxsgs81aw" path="res://src/data/enemy/test_enemy.tres" id="2_ipn1s"]
+
+[resource]
+script = ExtResource("1_2kgc5")
+database = Dictionary[int, ExtResource("1_r6olx")]({
+1: ExtResource("2_ipn1s")
+})
+metadata/_custom_type_script = "uid://c2h4t76wmjj3l"

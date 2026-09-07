@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://bqms3dqo57s73" path="res://src/battle/player_in_battle.tscn" id="1_ewtd0"]
 [ext_resource type="Script" uid="uid://dfbnl3yl6n6q3" path="res://src/battle/battle.gd" id="1_wssn5"]
+[ext_resource type="Resource" uid="uid://dqu0npl4qype4" path="res://src/data/enemy/enemy_catalog.tres" id="2_i4wed"]
 [ext_resource type="PackedScene" uid="uid://bj7thskyggr24" path="res://src/battle/hand.tscn" id="3_u3ckx"]
 [ext_resource type="Texture2D" uid="uid://dyu8kwe2gwrqo" path="res://assets/texture/third_bookmark.png" id="4_u3ckx"]
 [ext_resource type="Texture2D" uid="uid://onfws84je40g" path="res://assets/texture/first_bookmark.png" id="5_80tbf"]
@@ -11,6 +12,7 @@
 script = ExtResource("1_wssn5")
 enemy_container = NodePath("Enemys")
 spawn_positions = [NodePath("Marker/Marker2D"), NodePath("Marker/Marker2D2"), NodePath("Marker/Marker2D3")]
+enemy_catalog = ExtResource("2_i4wed")
 
 [node name="Background" type="CanvasLayer" parent="." unique_id=413745224]
 layer = -10

@@ -2,10 +2,17 @@ class_name Enemy
 extends Area2D
 
 signal player_detected(enemy_group: EnemyGroup)
+@onready var animation_player: AnimationPlayer = $AnimationPlayer
 @export var enemy_group: EnemyGroup
-
+@export var enemy_animation: String
 func _ready() -> void:
 	_check_if_defeated()
+	_play_animation(enemy_animation)
+
+func _play_animation(anim_name: String) -> void:
+	if animation_player.current_animation != anim_name:
+		animation_player.play(anim_name)
+		animation_player.speed_scale = 1.0
 
 func _check_if_defeated() -> void:
 	if GameState.is_enemy_defeated(name):

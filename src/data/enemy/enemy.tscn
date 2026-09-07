@@ -2,9 +2,48 @@
 
 [ext_resource type="Script" uid="uid://bfpi5dalp4xgv" path="res://src/data/enemy/enemy.gd" id="1_tkbbh"]
 [ext_resource type="Resource" uid="uid://r2nw4f0yhxlf" path="res://src/data/enemy/test_group.tres" id="2_7e66e"]
+[ext_resource type="Texture2D" uid="uid://c6ibv7av3l6ap" path="res://assets/enemy/a1/A-1.png" id="3_40nxh"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_bhunq"]
 radius = 114.00439
+
+[sub_resource type="Animation" id="Animation_3a8ww"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_w7xjc"]
+resource_name = "idle"
+length = 0.6
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [0, 1, 2]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_s3qrv"]
+_data = {
+&"RESET": SubResource("Animation_3a8ww"),
+&"idle": SubResource("Animation_w7xjc")
+}
 
 [node name="Enemy" type="Area2D" unique_id=1142740305]
 script = ExtResource("1_tkbbh")
@@ -15,8 +54,19 @@ position = Vector2(26, 36)
 shape = SubResource("CircleShape2D_bhunq")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1589811774]
+visible = false
 offset_right = 50.0
 offset_bottom = 82.0
 color = Color(1, 0, 0, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=958203087]
+position = Vector2(18, 55)
+texture = ExtResource("3_40nxh")
+hframes = 5
+vframes = 10
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=906987048]
+libraries/ = SubResource("AnimationLibrary_s3qrv")
+autoplay = &"idle"
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
