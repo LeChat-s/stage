@@ -6,6 +6,18 @@
 [ext_resource type="Texture2D" uid="uid://dupy45wsjnccj" path="res://assets/enemy/mushroom/mushroom.png" id="3_xpvo7"]
 [ext_resource type="Texture2D" uid="uid://ceqy64rwb35gr" path="res://assets/enemy/mushroom/Mushroom-Die.png" id="5_pwttg"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pwttg"]
+bg_color = Color(0.24325079, 0.6082821, 1, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.12826005, 0.40319926, 0.9604867, 1)
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+corner_detail = 2
+anti_aliasing = false
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_vm073"]
 atlas = ExtResource("2_fhwkn")
 region = Rect2(0, 0, 128, 128)
@@ -182,7 +194,19 @@ offset_bottom = 50.0
 show_percentage = false
 metadata/_edit_use_anchors_ = true
 
-[node name="HPText" type="Label" parent="HPBar" unique_id=2012711126]
+[node name="Block" type="Label" parent="HPBar" unique_id=408275231]
+layout_mode = 0
+offset_left = -21.0
+offset_top = -6.0
+offset_right = 10.0
+offset_bottom = 29.0
+theme_override_fonts/font = ExtResource("2_vm073")
+theme_override_styles/normal = SubResource("StyleBoxFlat_pwttg")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HPText" type="Label" parent="HPBar" unique_id=1441699146]
+z_index = 2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -192,14 +216,6 @@ grow_vertical = 2
 theme_override_fonts/font = ExtResource("2_vm073")
 horizontal_alignment = 1
 vertical_alignment = 1
-metadata/_edit_use_anchors_ = true
-
-[node name="Block" type="Label" parent="." unique_id=274767764]
-offset_left = -24.0
-offset_top = -172.0
-offset_right = 16.0
-offset_bottom = -129.0
-metadata/_edit_use_anchors_ = true
 
 [node name="Intent" type="Label" parent="." unique_id=1175957020]
 offset_left = -67.0
@@ -219,8 +235,6 @@ position = Vector2(-12, -66)
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_bhunq")
 animation = &"mushroom_die"
-frame = 11
-frame_progress = 0.40593466
 
 [node name="Area2D" type="Area2D" parent="." unique_id=1488702109]
 

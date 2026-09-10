@@ -8,7 +8,7 @@ signal died
 
 @onready var attack_effect: AnimatedSprite2D = $AnimatedSprite2D
 @onready var hp_bar: ProgressBar = $HPBar
-@onready var block_text: Label = $Block
+@onready var block_text: Label = $HPBar/Block
 @onready var intent_text: Label = $Intent
 @onready var hp_text: Label = $HPBar/HPText
 @onready var enemy_sprite: Sprite2D = $EnemySprite 
@@ -197,7 +197,7 @@ func _on_hp_changed(curent: int, maximum_hp) -> void:
 	if hp_text:
 		hp_text.text = str(curent) + " / " + str(maximum_hp)
 func _on_block_changed(amount: int) -> void:
-	block_text.text = "Блок: " + str(amount) 
+	block_text.text = str(amount) 
 
 func _on_intent_changed(text: String) -> void:
 	intent_text.text = text
