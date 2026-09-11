@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://xwbs63yjurp7"]
+
+[ext_resource type="Script" uid="uid://mnspl8pda3n1" path="res://src/ui/spell_container.gd" id="1_u22ky"]
+
+[node name="SpellContainer" type="Control" unique_id=1279996722]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_u22ky")
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=731965996]
+custom_minimum_size = Vector2(500, 250)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer" unique_id=605045434]
+layout_mode = 2
+theme_override_constants/separation = 30
+alignment = 1
+
+[node name="SpellAtk" type="TextureButton" parent="PanelContainer/HBoxContainer" unique_id=1864483475]
+layout_mode = 2
+
+[node name="SpellDef" type="TextureButton" parent="PanelContainer/HBoxContainer" unique_id=447673701]
+layout_mode = 2
+
+[node name="SpellUtl" type="TextureButton" parent="PanelContainer/HBoxContainer" unique_id=299101681]
+layout_mode = 2

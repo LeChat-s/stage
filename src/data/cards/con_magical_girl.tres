@@ -5,7 +5,7 @@
 
 [resource]
 script = ExtResource("1_itjyj")
-id = "inf_magical_girl"
+id = "con_magical_girl"
 name = "Заражение: Девочка-волшебница"
 cost = 3
 type = "infection"

@@ -3,8 +3,6 @@ extends Node2D
 
 @onready var player: PlayerInBattle = $PlayerInBattle
 @onready var hand: Hand = $UI/Hand
-@onready var deck_label: Label = $UI/DeckLabel
-@onready var discard_label: Label = $UI/DiscardLabel
 @onready var end_turn_button: Button = $UI/EndTurnButton
 @onready var deck_button: TextureButton = $UI/DeckButton
 @onready var discard_button: TextureButton = $UI/DiscardButton
@@ -16,7 +14,9 @@ extends Node2D
 @export var enemy_prefab: PackedScene = preload("res://src/battle/enemy_in_battle.tscn")
 @export var spawn_positions: Array[Marker2D] = []
 @export var enemy_catalog: EnemyCatalog
+@export var spell_container_scene: PackedScene = preload("res://src/ui/spell_container.tscn")
 
+var spell_container: Control = null
 var enemies: Array[EnemyInBattle] = []
 var deck: Array[CardData] = []
 var discard_pile: Array[CardData] = []
@@ -25,6 +25,7 @@ var active_infection: String = ""
 var magical_charge: int = 0
 var _is_battle_ending: bool = false
 var selected_enemy_target: EnemyInBattle
+var _starting_hand_prepared: bool = false
 
 func _ready() -> void:
 	_setup_battle()
@@ -42,6 +43,7 @@ func _setup_battle() -> void:
 	discard_pile.clear()
 	current_hand.clear()
 	
+	_starting_hand_prepared = false
 	end_turn_button.pressed.connect(_on_end_turn)
 	hand.card_selected.connect(_on_card_selected)
 	player.died.connect(_on_player_died)
@@ -113,7 +115,25 @@ func _start_player_turn() -> void:
 	player.reset_turn()
 	_apply_infection_turn_start_effects()
 	draw_cards(5)
+
+	if not _starting_hand_prepared:
+		_ensure_infection_cards_in_hand()
+		_starting_hand_prepared = true
+
 	_update_pipe_labels()
+
+func _is_infection_card(card: CardData) -> bool:
+	if card == null:
+		return false
+	
+	return card.resource_path.get_file().get_basename().begins_with("con_")
+
+func _ensure_infection_cards_in_hand() -> void:
+	for card in deck.duplicate():
+		if _is_infection_card(card):
+			deck.erase(card)
+			current_hand.append(card)
+			hand.add_card(card)
 
 func _apply_infection_turn_start_effects() -> void:
 	match active_infection:
@@ -146,7 +166,9 @@ func _on_card_selected(card_data: CardData) -> void:
 	var real_cost = CardEffectProcessor.calculate_dynamic_card_cost(card_data, self)
 	if not player.spend_energy(real_cost):
 		return
-		
+	
+	var is_infection := _is_infection_card(card_data)
+	
 	CardEffectProcessor.process_card(card_data, self, selected_enemy_target)
 	current_hand.erase(card_data)
 	
@@ -154,9 +176,53 @@ func _on_card_selected(card_data: CardData) -> void:
 		card_data.queue_free()
 	else:
 		discard_pile.append(card_data)
-		
+	
+	if is_infection:
+		_update_infection_ui(card_data)
+		_remove_all_infection_cards()
+	
 	_refresh_hand()
 	_update_pipe_labels()
+
+func _update_infection_ui(card_data: CardData) -> void:
+	var file_name := card_data.resource_path.get_file().get_basename()
+	var infection_name := file_name.trim_prefix("con_")
+
+	var class_icon := $UI/ClassIcon
+	var spell_container := $UI/SpellConteiner
+	var spell_button := $UI/SpellConteiner/SpellButton
+
+	var class_texture_path := "res://assets/icons/class_%s.png" % infection_name
+	var spell_texture_path := "res://assets/icons/spell_button_%s.png" % infection_name
+
+	var class_texture := load(class_texture_path) as Texture2D
+	var spell_texture := load(spell_texture_path) as Texture2D
+
+	if class_texture:
+		class_icon.texture = class_texture
+	else:
+		push_warning("Не найдена текстура класса: " + class_texture_path)
+
+	if spell_texture:
+		spell_button.texture_normal = spell_texture
+	else:
+		push_warning("Не найдена текстура способности: " + spell_texture_path)
+
+	class_icon.visible = true
+	spell_container.visible = true
+
+func _remove_all_infection_cards() -> void:
+	for i in range(current_hand.size() - 1, -1, -1):
+		if _is_infection_card(current_hand[i]):
+			current_hand.remove_at(i)
+	
+	for i in range(deck.size() - 1, -1, -1):
+		if _is_infection_card(deck[i]):
+			deck.remove_at(i)
+	
+	for i in range(discard_pile.size() - 1, -1, -1):
+		if _is_infection_card(discard_pile[i]):
+			discard_pile.remove_at(i)
 
 func _refresh_hand() -> void:
 	hand.clear_hand()
@@ -270,3 +336,21 @@ func _on_discard_button_pressed() -> void:
 		inspector_panel.open("Стопка сброса", discard_pile)
 	else:
 		inspector_panel.hide()
+
+
+func _on_spell_button_pressed() -> void:
+	if is_instance_valid(spell_container):
+		spell_container.visible = true
+		return
+	spell_container = spell_container_scene.instantiate() as Control
+	
+	if not spell_container:
+		push_error("Не удалось создать SpellContainer!")
+		return
+	$UI.add_child(spell_container)
+	var infection_name := active_infection
+	if infection_name.is_empty():
+		push_warning("Текущее заражение не установлено!")
+		return
+	spell_container.set_spells(infection_name)
+	spell_container.visible = true

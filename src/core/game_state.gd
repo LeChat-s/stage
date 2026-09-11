@@ -51,7 +51,8 @@ func is_enemy_defeated(enemy_id: String) -> bool:
 
 func _get_base_deck() -> Array[CardData]:
 	var base: Array[CardData] = []
-	base.append(load("res://src/data/cards/inf_magical_girl.tres"))
+	base.append(load("res://src/data/cards/con_magical_girl.tres"))
+	base.append(load("res://src/data/cards/con_doctor.tres"))
 	base.append(load("res://src/data/cards/atk_magical_blast.tres"))
 	base.append(load("res://src/data/cards/atk_magical_rain.tres"))
 	base.append(load("res://src/data/cards/def_magical_shield.tres"))

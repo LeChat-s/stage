@@ -1,36 +1,47 @@
 class_name CardEffectProcessor
 extends RefCounted
 
-# База данных эффектов: теперь хранит метод и путь к иконке (или готовую текстуру)
-static var effect_registry: Dictionary = {
-	"set_infection_magical_girl": {
-		"method": _fx_set_infection_magical_girl,
-		"icon": preload("res://assets/icons/contamination_magical_girl.png")
-	},
-	"gain_charge": {
-		"method": _fx_gain_charge,
-		"icon": preload("res://assets/icons/charge.png")
-	},
-	"gain_charge_2": {
-		"method": _fx_gain_charge_2,
-		"icon": preload("res://assets/icons/charge.png")
-	},
-	"gain_charge_per_hit": {
-		"method": _fx_gain_charge_per_hit,
-		"icon": preload("res://assets/icons/charge.png")
-	},
-	"spend_all_energy_for_charge": {
-		"method": _fx_spend_all_energy_for_charge,
-		"icon": preload("res://assets/icons/charge.png")
-	},
-	"double_dmg_if_charge_5": {
-		"method": _fx_double_dmg_if_charge_5,
-		"icon": preload("res://assets/icons/double_damage.png")
-	},
-	"draw_card": { "method": _fx_draw_card, "icon": null },
-	"draw_3": { "method": _fx_draw_3, "icon": null },
-	"clean_debuffs": { "method": _fx_clean_debuffs, "icon": null }
-}
+static var effect_registry: Dictionary = {}
+
+static func _static_init() -> void:
+	effect_registry = {
+		"set_infection_magical_girl": {
+			"method": _fx_set_infection_magical_girl,
+			"icon": preload("res://assets/icons/contamination_magical_girl.png")
+		},
+		"gain_charge": {
+			"method": _fx_gain_charge,
+			"icon": preload("res://assets/icons/charge.png")
+		},
+		"gain_charge_2": {
+			"method": _fx_gain_charge_2,
+			"icon": preload("res://assets/icons/charge.png")
+		},
+		"gain_charge_per_hit": {
+			"method": _fx_gain_charge_per_hit,
+			"icon": preload("res://assets/icons/charge.png")
+		},
+		"spend_all_energy_for_charge": {
+			"method": _fx_spend_all_energy_for_charge,
+			"icon": preload("res://assets/icons/charge.png")
+		},
+		"double_dmg_if_charge_5": {
+			"method": _fx_double_dmg_if_charge_5,
+			"icon": preload("res://assets/icons/double_damage.png")
+		},
+		"draw_card": {
+			"method": _fx_draw_card,
+			"icon": null
+		},
+		"draw_3": {
+			"method": _fx_draw_3,
+			"icon": null
+		},
+		"clean_debuffs": {
+			"method": _fx_clean_debuffs,
+			"icon": null
+		}
+	}
 
 static func process_card(card_data: CardData, battle: Battle, selected_target: EnemyInBattle = null) -> void:
 	var final_dmg = _calculate_modified_damage(card_data.dmg, battle)

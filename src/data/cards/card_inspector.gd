@@ -14,8 +14,6 @@ func open(window_title: String, cards_list: Array) -> void:
 	
 	title_label.text = window_title
 	
-	# ИСПРАВЛЕНИЕ 1: Удаляем старые ноды НЕмедленно через free(), 
-	# чтобы они не влияли на верстку новых элементов в этом кадре
 	for child in grid.get_children():
 		child.free() 
 	
@@ -25,8 +23,6 @@ func open(window_title: String, cards_list: Array) -> void:
 		
 		var card_pic = TextureRect.new()
 		
-		# ИСПРАВЛЕНИЕ 2: Явно указываем флаги расширения для UI контроля,
-		# чтобы GridContainer выделял под них место
 		card_pic.custom_minimum_size = Vector2(100, 140)
 		card_pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		card_pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
