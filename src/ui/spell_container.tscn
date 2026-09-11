@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://mnspl8pda3n1" path="res://src/ui/spell_container.gd" id="1_u22ky"]
 
-[node name="SpellContainer" type="Control" unique_id=1279996722]
+[node name="func _setup_button_group() -> void_# Создаем группу для кнопок, чтобы автоматически работал выбор _только одна_var group _= ButtonGroup_new()var buttons_ Array[TextureButton] = [spell_atk, spell_def, spell_utl]for btn in buttons_btn_toggle_mode = true          # Разрешаем кнопке оставаться нажатойbtn_button_group = group        # Привязываем к группе# Подключаем сигнал нажатияbtn_pressed_connect(_on_spell_pressed_bind(btn))func _setup_button_group() -> void_# Создаем группу для кнопок, чтобы автоматически работал выбор _только одна_var group _= ButtonGroup_new()var buttons_ Array[TextureButton] = [spell_atk, spell_def, spell_utl]for btn in buttons_btn_toggle_mode = true          # Разрешаем кнопке оставаться нажатойbtn_button_group = group        # Привязываем к группе# Подключаем сигнал нажатияbtn_pressed_connect(_on_spell_pressed_bind(btn))" type="Control" unique_id=1279996722]
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 3
 anchors_preset = 15
@@ -31,14 +31,25 @@ size_flags_vertical = 4
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer" unique_id=605045434]
 layout_mode = 2
-theme_override_constants/separation = 30
+theme_override_constants/separation = 45
 alignment = 1
 
 [node name="SpellAtk" type="TextureButton" parent="PanelContainer/HBoxContainer" unique_id=1864483475]
 layout_mode = 2
+size_flags_vertical = 4
 
 [node name="SpellDef" type="TextureButton" parent="PanelContainer/HBoxContainer" unique_id=447673701]
 layout_mode = 2
+size_flags_vertical = 4
 
 [node name="SpellUtl" type="TextureButton" parent="PanelContainer/HBoxContainer" unique_id=299101681]
 layout_mode = 2
+size_flags_vertical = 4
+
+[node name="SpellDescription" type="Label" parent="PanelContainer" unique_id=2131482012]
+custom_minimum_size = Vector2(50, 80)
+layout_mode = 2
+size_flags_vertical = 8
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
