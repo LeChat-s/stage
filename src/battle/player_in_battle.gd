@@ -40,26 +40,29 @@ func _on_animation_finished(anim_name: StringName) -> void:
 func play_attack()-> void:
 	animation_player.play("attack_battle")
 
-func take_damage(amount: int) -> void:
+func take_damage(amount: int, type: GameStateClass.DamageType = GameStateClass.DamageType.PHYSICAL) -> void:
+	var processed_damage: int = GameState.calculate_incoming_damage(amount, int(type))
+
 	if damage_popup_scene:
 		var popup = damage_popup_scene.instantiate()
 		get_tree().current_scene.add_child(popup)
-		popup.start(amount, $Sprite2D.global_position)
-	
-	var remaining = amount
+		popup.start_with_type(processed_damage, $Sprite2D.global_position, type)
+	var remaining = processed_damage
 	if block > 0:
 		var absorbed = min(block, remaining)
-		block -= remaining
+		block -= absorbed
 		remaining -= absorbed
 	hp -= remaining
-	GameState.player_hp = hp
-	print(GameState.player_hp)
 	if hp < 0:
 		hp = 0
+		
+	GameState.player_hp = hp
+	print("Оставшееся HP игрока: ", GameState.player_hp)
+	
 	emit_signals()
 	if hp <= 0:
 		died.emit()
-	
+
 func add_block(amount: int) -> void:
 	block += amount
 	emit_signals()

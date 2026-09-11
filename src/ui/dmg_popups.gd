@@ -2,22 +2,42 @@ class_name DmgPopups
 extends Label
 
 func start(amount: int, start_position: Vector2) -> void:
+	start_with_type(amount, start_position, int(GameStateClass.DamageType.PHYSICAL))
+
+func start_with_type(amount: int, start_position: Vector2, type: int) -> void:
 	text = str(amount)
 	z_index = 100
+	modulate.a = 1.0
+	self_modulate = Color.WHITE
+	
+	var damage_colors = {
+		int(GameStateClass.DamageType.PHYSICAL): Color.CRIMSON,        
+		int(GameStateClass.DamageType.MAGIC): Color.AQUA,
+		int(GameStateClass.DamageType.PSYCHIC): Color.MAGENTA      
+	}
+	var type_key = int(type)
+	
+	if type_key in damage_colors:
+		self_modulate = damage_colors[type_key]
+	else:
+		self_modulate = Color.WHITE
+	print(type_key)
+	print(self_modulate.to_html(false))
 	force_update_transform()
 	reset_size() 
 	global_position = start_position - (size / 2.0) 
 	var random_x = randf_range(-30.0, 30.0)
 	var target_position = global_position + Vector2(random_x, -80.0) 
 	scale = Vector2.ZERO
-	modulate.a = 1.0
 	pivot_offset = size / 2.0 
+	
 	var tween = create_tween().set_parallel(true)
 	tween.tween_property(self, "global_position", target_position, 0.6)\
 		.set_trans(Tween.TRANS_QUAD)\
 		.set_ease(Tween.EASE_OUT)
 	tween.tween_property(self, "modulate:a", 0.0, 0.8)\
 		.set_delay(0.2) 
+		
 	var scale_tween = create_tween()
 	scale_tween.tween_property(self, "scale", Vector2(1.4, 1.4), 0.15)\
 		.set_trans(Tween.TRANS_QUAD)\

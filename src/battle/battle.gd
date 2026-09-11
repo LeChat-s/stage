@@ -21,7 +21,7 @@ var enemies: Array[EnemyInBattle] = []
 var deck: Array[CardData] = []
 var discard_pile: Array[CardData] = []
 var current_hand: Array[CardData] = []
-var active_infection: String = ""
+var active_infection: String = "none"
 var magical_charge: int = 0
 var _is_battle_ending: bool = false
 var selected_enemy_target: EnemyInBattle
@@ -32,6 +32,9 @@ func _ready() -> void:
 	_start_player_turn()
 
 func _setup_battle() -> void:
+	GameState.active_contamination = "none"
+	active_infection = "none"
+	
 	player.setup({
 		"hp": GameState.player_hp,
 		"max_hp": GameState.player_max_hp
@@ -113,7 +116,6 @@ func _get_minion_data_by_id(id: int) -> EnemyData:
 	
 func _start_player_turn() -> void:
 	player.reset_turn()
-	_apply_infection_turn_start_effects()
 	draw_cards(5)
 
 	if not _starting_hand_prepared:
@@ -125,7 +127,6 @@ func _start_player_turn() -> void:
 func _is_infection_card(card: CardData) -> bool:
 	if card == null:
 		return false
-	
 	return card.resource_path.get_file().get_basename().begins_with("con_")
 
 func _ensure_infection_cards_in_hand() -> void:
@@ -134,14 +135,6 @@ func _ensure_infection_cards_in_hand() -> void:
 			deck.erase(card)
 			current_hand.append(card)
 			hand.add_card(card)
-
-func _apply_infection_turn_start_effects() -> void:
-	match active_infection:
-		"inf_magical_girl":
-			player.add_energy(1)
-			var concentration_res = load("res://src/data/cards/evt_concentration.tres") as CardData
-			if concentration_res:
-				_add_card_to_hand_directly(concentration_res.duplicate())
 
 func _add_card_to_hand_directly(card_data: CardData) -> void:
 	current_hand.append(card_data)
@@ -178,6 +171,13 @@ func _on_card_selected(card_data: CardData) -> void:
 		discard_pile.append(card_data)
 	
 	if is_infection:
+		var file_name := card_data.resource_path.get_file().get_basename()
+		var infection_name := file_name.trim_prefix("con_")
+
+		active_infection = infection_name
+		GameState.active_contamination = infection_name
+		print("[СМЕНА ФОРМЫ] Глобальное заражение изменено на: ", GameState.active_contamination)
+		
 		_update_infection_ui(card_data)
 		_remove_all_infection_cards()
 	
@@ -256,101 +256,14 @@ func _on_end_turn() -> void:
 
 func _on_player_died() -> void:
 	print("игрок мертв") 
+	GameState.active_contamination = "none"
 	get_tree().change_scene_to_file("res://src/world/prologue.tscn")
 
 func _on_enemy_died(dead_enemy: EnemyInBattle) -> void:
 	print("Враг умер: ", dead_enemy.name)
-	enemies.erase(dead_enemy)
-	if selected_enemy_target == dead_enemy:
-		if not enemies.is_empty():
-			selected_enemy_target = enemies[0]
-		else:
-			selected_enemy_target = null
-	if enemies.is_empty():
-		_check_battle_victory()
-
-func _check_battle_victory() -> void:
-	if _is_battle_ending:
-		return
-	_is_battle_ending = true
-	print("Все враги мертвы") 
 	
-	if GameState.current_enemy_node_name != "":
-		GameState.mark_enemy_detected(GameState.current_enemy_node_name)
-		
-	await get_tree().create_timer(1.0).timeout
-	var tree = Engine.get_main_loop() as SceneTree
-	if tree:
-		tree.change_scene_to_file("res://src/world/prologue.tscn")
-	else:
-		print("Ошибка: Не удалось получить доступ к SceneTree для смены сцены")
-
 func _update_pipe_labels() -> void:
-	deck_count_label.text = str(deck.size())
-	discard_count_label.text = str(discard_pile.size())
-
-func highlight_targets_for_type(target_type: CardData.TargetType) -> void:
-	clear_all_highlights()
-	
-	match target_type:
-		CardData.TargetType.SELF:
-			player.set_highlight(true)
-			
-		CardData.TargetType.ALL_ENEMIES:
-			for e in enemies:
-				if is_instance_valid(e) and e.hp > 0:
-					e.set_highlight(true)
-					
-		CardData.TargetType.ALL_HEROES:
-			player.set_highlight(true)
-			for e in enemies:
-				if is_instance_valid(e) and e.hp > 0:
-					e.set_highlight(true)
-					
-		CardData.TargetType.ENEMY:
-			if is_instance_valid(selected_enemy_target):
-				selected_enemy_target.set_highlight(true)
-
-func clear_all_highlights() -> void:
-	player.set_highlight(false)
-	for e in enemies:
-		if is_instance_valid(e):
-			e.set_highlight(false)
-
-func select_new_target(new_target: EnemyInBattle) -> void:
-	if not is_instance_valid(new_target) or new_target.hp <= 0:
-		return
-	selected_enemy_target = new_target
-	print("Игрок выбрал новую цель: ", new_target.name)
-	clear_all_highlights()
-	selected_enemy_target.set_highlight(true)
-
-func _on_deck_button_pressed() -> void:
-	if deck.size() > 0:
-		inspector_panel.open("Содержимое колоды", deck)
-	else:
-		inspector_panel.hide()
-
-func _on_discard_button_pressed() -> void:
-	if discard_pile.size() > 0:
-		inspector_panel.open("Стопка сброса", discard_pile)
-	else:
-		inspector_panel.hide()
-
-
-func _on_spell_button_pressed() -> void:
-	if is_instance_valid(spell_container):
-		spell_container.visible = true
-		return
-	spell_container = spell_container_scene.instantiate() as Control
-	
-	if not spell_container:
-		push_error("Не удалось создать SpellContainer!")
-		return
-	$UI.add_child(spell_container)
-	var infection_name := active_infection
-	if infection_name.is_empty():
-		push_warning("Текущее заражение не установлено!")
-		return
-	spell_container.set_spells(infection_name)
-	spell_container.visible = true
+	if deck_count_label:
+		deck_count_label.text = str(deck.size())
+	if discard_count_label:
+		discard_count_label.text = str(discard_pile.size())

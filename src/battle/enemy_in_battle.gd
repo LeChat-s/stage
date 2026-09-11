@@ -64,7 +64,9 @@ func _on_click_zone_input_event(_viewport: Node, event: InputEvent, _shape_idx: 
 		if battle_scene:
 			battle_scene.select_new_target(self)
 
-func take_damage(amount: int, effect_name: String = "default_attack") -> void:
+func take_damage(amount: int, effect_name: String = "default_attack", type: GameStateClass.DamageType = GameStateClass.DamageType.PHYSICAL) -> void:
+	var type_int = int(type)
+	
 	if damage_popup_scene:
 		var popup = damage_popup_scene.instantiate()
 		var ui_node = get_tree().current_scene.get_node("UI")
@@ -73,21 +75,25 @@ func take_damage(amount: int, effect_name: String = "default_attack") -> void:
 			ui_node.add_child(popup)
 		else:
 			get_tree().current_scene.add_child(popup)
-		popup.start(amount, screen_position)
+		popup.start_with_type(amount, screen_position, type_int)
+		
 	var remaining = amount
 	if block > 0:
 		var absorbed = min(block, remaining)
 		block -= absorbed
 		remaining -= absorbed
+		
 	if attack_effect.sprite_frames.has_animation(effect_name):
 		attack_effect.visible = true
 		attack_effect.play(effect_name)
 		await attack_effect.animation_finished
 		attack_effect.visible = false
+		
 	hp -= remaining
 	if hp < 0:
 		hp = 0
 	emit_signals()
+	
 	if hp <= 0:
 		died.emit()
 		if phase > 0:
@@ -114,17 +120,30 @@ func get_next_action() -> String:
 func execute_action(action: String, target: PlayerInBattle) -> void:
 	block = 0
 	var parts = action.split(":")
-	var action_type = parts[0]
+	var raw_action_type = parts[0].strip_edges()
 	var value = int(parts[1])
 	
 	var battle_scene = get_tree().current_scene as Battle
+
+	var action_type = raw_action_type
+	var current_damage_type: int = 0 # По умолчанию PHYSICAL (0)
+	
+	if " " in raw_action_type:
+		var sub_parts = raw_action_type.split(" ")
+		action_type = sub_parts[0] # Это будет "attack"
+		var modifier = sub_parts[1] # Это будет "-m", "-f", "-p"
+		
+		match modifier:
+			"-f": current_damage_type = GameStateClass.DamageType.PHYSICAL
+			"-m": current_damage_type = GameStateClass.DamageType.MAGIC
+			"-p": current_damage_type = GameStateClass.DamageType.PSYCHIC
 
 	match action_type:
 		"attack":
 			var final_damage = value
 			if buffs.has("rage"):
 				final_damage += buffs["rage"]
-			target.take_damage(final_damage)
+			target.take_damage(final_damage, current_damage_type)
 			
 		"defend":
 			add_block(value)
@@ -150,22 +169,33 @@ func execute_action(action: String, target: PlayerInBattle) -> void:
 	tick_buffs()
 	show_intent()
 
-
 func show_intent() -> void:
 	if actions.is_empty():
-		intent_changed.emit("Атака: 5")
+		intent_changed.emit("Атака (Физ.): 5")
 		return
 		
 	var next_action = actions[action_index % actions.size()]
 	var parts = next_action.split(":")
+	var raw_action_type = parts[0].strip_edges()
 	var text = ""
 	
-	match parts[0]:
+	var action_type = raw_action_type
+	var type_text = "Физ." 
+	
+	if " " in raw_action_type:
+		var sub_parts = raw_action_type.split(" ")
+		action_type = sub_parts[0]
+		match sub_parts[1]:
+			"-f": type_text = "Физ."
+			"-m": type_text = "Маг."
+			"-p": type_text = "Псих."
+	
+	match action_type:
 		"attack":
 			var dmg = int(parts[1])
 			if buffs.has("rage"):
 				dmg += buffs["rage"]
-			text = "Атака: " + str(dmg)
+			text = "Атака (%s): %d" % [type_text, dmg]
 		"defend":
 			text = "Защита: " + parts[1]
 		"summon":
@@ -199,11 +229,11 @@ func _on_hp_changed(curent: int, maximum_hp) -> void:
 func _on_block_changed(amount: int) -> void:
 	block_text.text = str(amount) 
 
-func _on_intent_changed(text: String) -> void:
+func _on_on_intent_changed(text: String) -> void:
 	intent_text.text = text
 
 func set_highlight(active: bool) -> void:
 	if active:
 		modulate = Color(1.5, 1.5, 1.2, 1.0)
 	else:
-		modulate = Color.WHITE 
+		modulate = Color.WHITE
