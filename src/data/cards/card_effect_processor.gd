@@ -52,19 +52,19 @@ static func process_card(card_data: CardData, battle: Battle, selected_target: E
 		match card_data.target_type:
 			CardData.TargetType.ENEMY:
 				if is_instance_valid(selected_target):
-					selected_target.take_damage(final_dmg)
+					selected_target.take_damage(final_dmg, card_data.id, card_data.damage_type)
 				elif is_instance_valid(battle.selected_enemy_target):
-					battle.selected_enemy_target.take_damage(final_dmg)
+					battle.selected_enemy_target.take_damage(final_dmg, card_data.id, card_data.damage_type)
 				else:
 					print("Предупреждение: Нет выбранной цели для одиночной атаки!")
 					
 			CardData.TargetType.ALL_ENEMIES:
 				for enemy in battle.enemies:
 					if is_instance_valid(enemy) and enemy.hp > 0:
-						enemy.take_damage(final_dmg)
-						
+						enemy.take_damage(final_dmg, card_data.id, card_data.damage_type)
+				
 				if is_instance_valid(selected_target):
-					selected_target.take_damage(final_dmg)
+					selected_target.take_damage(final_dmg, card_data.id, card_data.damage_type)
 
 	if final_shield > 0:
 		battle.player.add_block(final_shield)
@@ -82,6 +82,7 @@ static func process_card(card_data: CardData, battle: Battle, selected_target: E
 			_update_ui_effects(battle, effect_id)
 		else:
 			print("Эффект не найден: ", effect_id)
+
 
 static func _update_ui_effects(battle: Battle, effect_id: String) -> void:
 	var effect_info = effect_registry[effect_id]

@@ -76,7 +76,8 @@ func spend_energy(amount: int) -> bool:
 
 func reset_turn() -> void:
 	block = 0
-	energy = max_energy
+	var bonus = GameState.get_bonus_energy()
+	energy = max_energy + bonus
 	emit_signals()
 
 func emit_signals() -> void:

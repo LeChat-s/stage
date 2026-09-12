@@ -6,6 +6,11 @@ enum TargetType { ENEMY, SELF, ALL_ENEMIES, ALL_HEROES }
 @export var id: String
 @export var name: String
 @export var dmg: int = 0
+
+# НОВОЕ: Тип урона для атакующих карт. По умолчанию — ФИЗИЧЕСКИЙ.
+# Используем Enum из вашего GameStateClass (PHYSICAL, MAGIC, PSYCHIC)
+@export var damage_type: GameStateClass.DamageType = GameStateClass.DamageType.PHYSICAL
+
 @export var shild: int = 0
 @export var cost: int = 1
 @export var type: String

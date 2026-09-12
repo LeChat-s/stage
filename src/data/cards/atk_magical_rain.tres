@@ -8,6 +8,7 @@ script = ExtResource("1_dx0pr")
 id = "atk_magical_rain"
 name = "Волшебный дождь"
 dmg = 5
+damage_type = 2
 type = "attack"
 target_type = 2
 effects = Array[Dictionary]([{

@@ -267,3 +267,20 @@ func _update_pipe_labels() -> void:
 		deck_count_label.text = str(deck.size())
 	if discard_count_label:
 		discard_count_label.text = str(discard_pile.size())
+
+func _on_spell_button_pressed() -> void:
+	if is_instance_valid(spell_container):
+		spell_container.visible = true
+		return
+	spell_container = spell_container_scene.instantiate() as Control
+	
+	if not spell_container:
+		push_error("Не удалось создать SpellContainer!")
+		return
+	$UI.add_child(spell_container)
+	var infection_name := active_infection
+	if infection_name.is_empty():
+		push_warning("Текущее заражение не установлено!")
+		return
+	spell_container.set_spells(infection_name)
+	spell_container.visible = true

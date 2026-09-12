@@ -12,7 +12,8 @@ enum DamageType { PHYSICAL, MAGIC, PSYCHIC }
 var passives: Dictionary = {
 	"max_hp_boost": 0, 
 	"damage_res": 0, 
-	"magical_girl_passive": 1 
+	"mg_energy_boost": 1,
+	"mg_magic_res": 1      
 }
 
 const HP_BOOST_PER_LEVEL: int = 10
@@ -53,15 +54,13 @@ func _toggle_info_panel() -> void:
 func upgrade_passive(passive_name: String) -> void:
 	if passive_name in passives:
 		if passive_name == "damage_res" and passives[passive_name] >= MAX_DAMAGE_RES_LEVEL:
-			print("Достигнут максимальный уровень общего сопротивления урону!")
 			return
-		if passive_name == "magical_girl_passive" and passives[passive_name] >= MG_MAX_LEVEL:
-			print("Достигнут максимальный уровень пассивки Девочки-Волшебницы!")
+		if (passive_name == "mg_energy_boost" or passive_name == "mg_magic_res") and passives[passive_name] >= MG_MAX_LEVEL:
+			print("Достигнут максимальный уровень улучшения формы!")
 			return
 			
 		passives[passive_name] += 1
 		recalculate_stats()
-		print("Пассивка ", passive_name, " улучшена до уровня: ", passives[passive_name])
 	else:
 		push_error("Пассивка с именем " + passive_name + " не существует!")
 
@@ -75,7 +74,7 @@ func calculate_incoming_damage(base_damage: int, type: int = 0) -> int:
 	var specific_res: float = 0.0
 	
 	if active_contamination == "magical_girl" and type == int(DamageType.MAGIC):
-		var mg_lvl = passives["magical_girl_passive"]
+		var mg_lvl = passives["mg_magic_res"]
 		specific_res = mg_lvl * MG_MAGIC_RES_PER_LEVEL # 0.07, 0.14 или 0.21
 		print("[ЗАРАЖЕНИЕ] Сработало сопротивление магии формы Девочки-Волшебницы: ", specific_res * 100, "%")
 	var final_modifier: float = (1.0 - total_general_res) * (1.0 - specific_res)
@@ -84,7 +83,7 @@ func calculate_incoming_damage(base_damage: int, type: int = 0) -> int:
 	return roundi(base_damage * final_modifier)
 func get_bonus_energy() -> int:
 	if active_contamination == "magical_girl":
-		return passives["magical_girl_passive"]
+		return passives["mg_energy_boost"]
 	return 0
 	
 func reset_run() -> void:
