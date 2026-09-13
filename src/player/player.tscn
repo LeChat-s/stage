@@ -163,7 +163,7 @@ autoplay = &"idle"
 position = Vector2(0, -1)
 texture = ExtResource("4_244u8")
 hframes = 10
-vframes = 6
+vframes = 24
 frame = 1
 
 [connection signal="dash_started" from="DashComponent" to="." method="_on_dash_started"]

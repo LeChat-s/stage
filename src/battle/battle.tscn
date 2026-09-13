@@ -7,6 +7,18 @@
 [ext_resource type="Texture2D" uid="uid://dyu8kwe2gwrqo" path="res://assets/texture/third_bookmark.png" id="4_u3ckx"]
 [ext_resource type="Texture2D" uid="uid://onfws84je40g" path="res://assets/texture/first_bookmark.png" id="5_80tbf"]
 [ext_resource type="PackedScene" uid="uid://bdsdigf1um2od" path="res://src/data/cards/card_inspector.tscn" id="6_80tbf"]
+[ext_resource type="Texture2D" uid="uid://nd17a43okfr5" path="res://assets/texture/sekond_bookmark.png" id="8_qkyk6"]
+[ext_resource type="Texture2D" uid="uid://bhandgrgcb3kx" path="res://assets/icons/Д-13BASETexture.png" id="9_64noy"]
+[ext_resource type="Texture2D" uid="uid://2yn2t2ry10o0" path="res://assets/icons/Д-13BASE.png" id="9_htieh"]
+[ext_resource type="Texture2D" uid="uid://ddb5xywfm2spd" path="res://assets/icons/Д-13BASESpellA.png" id="10_htieh"]
+[ext_resource type="Texture2D" uid="uid://1llwcjg4nnfc" path="res://assets/icons/Д-13BASESpellB.png" id="11_twqsi"]
+[ext_resource type="Texture2D" uid="uid://85uk25rxai4n" path="res://assets/icons/Д-13BASESpellС.png" id="12_7g5g1"]
+[ext_resource type="Texture2D" uid="uid://b467xhgy4jg0l" path="res://assets/icons/Д-13BASETextureEnergy.png" id="14_7g5g1"]
+[ext_resource type="FontFile" uid="uid://c35xg7jni7v5p" path="res://assets/fonts/PixeloidSans.ttf" id="15_6vfvu"]
+[ext_resource type="PackedScene" uid="uid://xwbs63yjurp7" path="res://src/ui/utility_choice_panel.tscn" id="16_6vfvu"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bhunq"]
+texture = ExtResource("8_qkyk6")
 
 [node name="Battle" type="Node2D" unique_id=250436248 node_paths=PackedStringArray("enemy_container", "spawn_positions")]
 script = ExtResource("1_wssn5")
@@ -18,6 +30,7 @@ enemy_catalog = ExtResource("2_i4wed")
 layer = -10
 
 [node name="PlayerInBattle" parent="." unique_id=270825366 instance=ExtResource("1_ewtd0")]
+position = Vector2(319, 429)
 
 [node name="Enemys" type="Node2D" parent="." unique_id=809332175]
 z_index = 10
@@ -25,27 +38,27 @@ z_index = 10
 [node name="Marker" type="Node2D" parent="." unique_id=1963761707]
 
 [node name="Marker2D" type="Marker2D" parent="Marker" unique_id=1070361101]
-position = Vector2(768, 384)
+position = Vector2(847, 429)
 
 [node name="Marker2D2" type="Marker2D" parent="Marker" unique_id=1551218520]
-position = Vector2(848, 432)
+position = Vector2(910, 500)
 
 [node name="Marker2D3" type="Marker2D" parent="Marker" unique_id=67665318]
-position = Vector2(928, 384)
+position = Vector2(1003, 425)
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1180394887]
 
 [node name="Hand" parent="UI" unique_id=617245203 instance=ExtResource("3_u3ckx")]
-offset_left = 551.0
-offset_top = 489.0
-offset_right = 587.0
-offset_bottom = 515.0
+offset_left = 630.0
+offset_top = 511.0
+offset_right = 666.0
+offset_bottom = 537.0
 
 [node name="EndTurnButton" type="Button" parent="UI" unique_id=2025636770]
-offset_left = 533.0
-offset_top = 594.0
-offset_right = 618.0
-offset_bottom = 638.0
+offset_left = 612.0
+offset_top = 643.0
+offset_right = 697.0
+offset_bottom = 687.0
 text = "End"
 
 [node name="DeckButton" type="TextureButton" parent="UI" unique_id=1193450441]
@@ -89,38 +102,140 @@ offset_top = 48.0
 offset_right = 884.0
 offset_bottom = 448.0
 
-[node name="ClassIcon" type="TextureRect" parent="UI" unique_id=2060058618]
+[node name="PanelContainer" type="PanelContainer" parent="UI" unique_id=757350480]
 visible = false
-anchors_preset = -1
-anchor_left = 0.040000003
-anchor_top = 0.045
-anchor_right = 0.09200001
-anchor_bottom = 0.13700001
-offset_left = -0.08000183
-offset_top = -0.16000175
-offset_right = 0.015991211
-offset_bottom = 0.2239914
+offset_right = 350.0
+offset_bottom = 160.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_bhunq")
 
-[node name="SpellConteiner" type="Control" parent="UI" unique_id=744599667]
-visible = false
+[node name="Class" type="Control" parent="UI" unique_id=1188164085]
+clip_contents = true
 layout_mode = 3
-anchor_left = 0.12200001
-anchor_top = 0.066
-anchor_right = 0.224
-anchor_bottom = 0.15100001
-offset_left = 0.45599365
-offset_top = 0.23199844
-offset_right = -0.04800415
-offset_bottom = 0.1519928
+anchor_right = 0.578
+anchor_bottom = 0.33900002
+offset_right = 0.15997314
+offset_bottom = -0.08001709
 
-[node name="SpellButton" type="TextureButton" parent="UI/SpellConteiner" unique_id=1728295707]
+[node name="Texture" type="TextureRect" parent="UI/Class" unique_id=1265544171]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("9_64noy")
+
+[node name="SpellConteiner" type="Control" parent="UI/Class" unique_id=744599667]
+layout_mode = 1
+anchor_left = 0.29200003
+anchor_top = 0.19700001
+anchor_right = 0.578
+anchor_bottom = 0.53300005
+offset_left = -0.08001709
+offset_top = -0.06800461
+offset_right = 0.27999878
+offset_bottom = -0.052017212
+
+[node name="SpellButtonA" type="TextureButton" parent="UI/Class/SpellConteiner" unique_id=1728295707]
+custom_minimum_size = Vector2(64, 64)
 layout_mode = 1
 anchors_preset = -1
-anchor_right = 0.342
-anchor_bottom = 0.72700006
-offset_right = -0.013999939
-offset_bottom = 0.014995575
+anchor_top = 0.07300001
+anchor_right = 0.29700002
+anchor_bottom = 0.85400003
+offset_left = -1.0
+offset_top = 0.0140013695
+offset_right = -12.578003
+offset_bottom = -0.027999878
+grow_vertical = 2
+texture_normal = ExtResource("10_htieh")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="SpellButtonB" type="TextureButton" parent="UI/Class/SpellConteiner" unique_id=1383319045]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.349
+anchor_top = 0.11000001
+anchor_right = 0.651
+anchor_bottom = 0.89000005
+offset_left = 18.424995
+offset_top = 11.98
+offset_right = -18.425018
+offset_bottom = -11.980003
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("11_twqsi")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="SpellButtonC" type="TextureButton" parent="UI/Class/SpellConteiner" unique_id=1871429828]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.698
+anchor_top = 0.11000001
+anchor_right = 1.0
+anchor_bottom = 0.89000005
+offset_left = 36.84999
+offset_top = 11.98
+offset_bottom = -11.980003
+grow_horizontal = 0
+grow_vertical = 2
+texture_normal = ExtResource("12_7g5g1")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="ClassIcon" type="TextureRect" parent="UI/Class" unique_id=2060058618]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.095000006
+anchor_top = 0.10700001
+anchor_right = 0.268
+anchor_bottom = 0.63100004
+offset_left = -0.30000305
+offset_top = -0.10800171
+offset_right = -0.32000732
+offset_bottom = 0.035995483
+texture = ExtResource("9_htieh")
+expand_mode = 1
+
+[node name="Energy" type="TextureRect" parent="UI/Class" unique_id=534162198]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.601
+anchor_top = 0.31100002
+anchor_right = 0.688
+anchor_bottom = 0.44300002
+offset_left = 0.25997925
+offset_top = 0.115997314
+offset_right = -0.120025635
+offset_bottom = -0.09200287
+texture = ExtResource("14_7g5g1")
+
+[node name="EnergyLabel" type="Label" parent="UI/Class/Energy" unique_id=860046612]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.125
+anchor_right = 0.859
+anchor_bottom = 1.0
+offset_right = 0.02399826
+offset_bottom = -3.0
+theme_override_colors/font_color = Color(1, 0.9019608, 1, 1)
+theme_override_fonts/font = ExtResource("15_6vfvu")
+theme_override_font_sizes/font_size = 20
+text = "5"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="UtilityChoicePanel" parent="UI" unique_id=1279996722 instance=ExtResource("16_6vfvu")]
+visible = false
 
 [connection signal="pressed" from="UI/DeckButton" to="." method="_on_deck_button_pressed"]
 [connection signal="pressed" from="UI/DiscardButton" to="." method="_on_discard_button_pressed"]
-[connection signal="pressed" from="UI/SpellConteiner/SpellButton" to="." method="_on_spell_button_pressed"]
+[connection signal="pressed" from="UI/Class/SpellConteiner/SpellButtonA" to="." method="_on_spell_button_a_pressed"]
+[connection signal="pressed" from="UI/Class/SpellConteiner/SpellButtonB" to="." method="_on_spell_button_b_pressed"]
+[connection signal="pressed" from="UI/Class/SpellConteiner/SpellButtonC" to="." method="_on_spell_button_c_pressed"]

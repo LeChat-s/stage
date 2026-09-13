@@ -9,12 +9,12 @@ extends Node2D
 @onready var inspector_panel: PanelContainer = $UI/CardInspector
 @onready var deck_count_label: Label = $UI/DeckButton/CountLabel
 @onready var discard_count_label: Label = $UI/DiscardButton/CountLabel
-
+@onready var energy_text: Label = $UI/Class/Energy/EnergyLabel
+@onready var utility_choice_panel: Control = $UI/UtilityChoicePanel 
 @export var enemy_container: Node2D
 @export var enemy_prefab: PackedScene = preload("res://src/battle/enemy_in_battle.tscn")
 @export var spawn_positions: Array[Marker2D] = []
 @export var enemy_catalog: EnemyCatalog
-@export var spell_container_scene: PackedScene = preload("res://src/ui/spell_container.tscn")
 
 var spell_container: Control = null
 var enemies: Array[EnemyInBattle] = []
@@ -24,12 +24,19 @@ var current_hand: Array[CardData] = []
 var active_infection: String = "none"
 var magical_charge: int = 0
 var _is_battle_ending: bool = false
-var selected_enemy_target: EnemyInBattle
+var selected_enemy_target: Node2D = null
 var _starting_hand_prepared: bool = false
+var current_target: Node2D = null
+var fireblast_cooldown: int = 0
+var is_fireblast_upgraded: bool = false
+var is_shield_upgraded: bool = false
 
 func _ready() -> void:
 	_setup_battle()
 	_start_player_turn()
+	if player:
+		player.energy_changed.connect(update_energy_display)
+		update_energy_display(player.energy)
 
 func _setup_battle() -> void:
 	GameState.active_contamination = "none"
@@ -113,7 +120,25 @@ func _get_minion_data_by_id(id: int) -> EnemyData:
 		return enemy_catalog.get_enemy_data(id)
 	print("enemy_catalog отсутствует")
 	return null
-	
+
+func select_new_target(new_target: Node2D) -> void:
+	if not is_instance_valid(new_target):
+		return
+	var actual_creature: Node2D = new_target
+	while is_instance_valid(actual_creature) and not actual_creature.has_method("take_damage") and actual_creature.get_parent() is Node2D:
+		actual_creature = actual_creature.get_parent() as Node2D
+	if is_instance_valid(actual_creature) and actual_creature.has_method("take_damage"):
+		if current_target == actual_creature:
+			return
+		if is_instance_valid(current_target) and current_target.has_method("set_highlight"):
+			current_target.set_highlight(false)
+		current_target = actual_creature
+		selected_enemy_target = actual_creature
+		if current_target.has_method("set_highlight"):
+			current_target.set_highlight(true)
+			
+		print("УСПЕШНО выбрана цель существа: ", current_target.name, " [Класс: ", current_target.get_script().get_global_name(), "]")
+
 func _start_player_turn() -> void:
 	player.reset_turn()
 	draw_cards(5)
@@ -187,29 +212,34 @@ func _on_card_selected(card_data: CardData) -> void:
 func _update_infection_ui(card_data: CardData) -> void:
 	var file_name := card_data.resource_path.get_file().get_basename()
 	var infection_name := file_name.trim_prefix("con_")
-
-	var class_icon := $UI/ClassIcon
-	var spell_container := $UI/SpellConteiner
-	var spell_button := $UI/SpellConteiner/SpellButton
-
+	var class_icon := $UI/Class/ClassIcon
+	var spell_container := $UI/Class/SpellConteiner
 	var class_texture_path := "res://assets/icons/class_%s.png" % infection_name
-	var spell_texture_path := "res://assets/icons/spell_button_%s.png" % infection_name
-
 	var class_texture := load(class_texture_path) as Texture2D
-	var spell_texture := load(spell_texture_path) as Texture2D
 
 	if class_texture:
 		class_icon.texture = class_texture
 	else:
 		push_warning("Не найдена текстура класса: " + class_texture_path)
+	var suffixes := ["A", "B", "C"]
+	for suffix in suffixes:
+		var button_name: String = "SpellButton" + suffix
+		var spell_button := spell_container.get_node_or_null(button_name) as TextureButton
+		
+		if spell_button:
+			var spell_texture_path := "res://assets/icons/spell_button_%s_%s.png" % [infection_name, suffix.to_lower()]
+			var spell_texture := load(spell_texture_path) as Texture2D
 
-	if spell_texture:
-		spell_button.texture_normal = spell_texture
-	else:
-		push_warning("Не найдена текстура способности: " + spell_texture_path)
+			if spell_texture:
+				spell_button.texture_normal = spell_texture
+			else:
+				push_warning("Не найдена текстура способности для %s: %s" % [button_name, spell_texture_path])
+		else:
+			push_warning("Узел %s не найден в %s" % [button_name, spell_container.name])
 
 	class_icon.visible = true
 	spell_container.visible = true
+
 
 func _remove_all_infection_cards() -> void:
 	for i in range(current_hand.size() - 1, -1, -1):
@@ -268,19 +298,89 @@ func _update_pipe_labels() -> void:
 	if discard_count_label:
 		discard_count_label.text = str(discard_pile.size())
 
-func _on_spell_button_pressed() -> void:
-	if is_instance_valid(spell_container):
-		spell_container.visible = true
+func update_energy_display(amount: int) -> void:
+	if energy_text:
+		energy_text.text = str(amount)
+
+func _on_deck_button_pressed() -> void:
+	if deck.size() > 0:
+		inspector_panel.open("Содержимое колоды", deck)
+	else:
+		inspector_panel.hide()
+
+func _on_discard_button_pressed() -> void:
+	if discard_pile.size() > 0:
+		inspector_panel.open("Стопка сброса", discard_pile)
+	else:
+		inspector_panel.hide()
+
+
+func _on_spell_button_a_pressed() -> void:
+	if fireblast_cooldown > 0:
+		print("Способность на перезарядке! Осталось ходов: ", fireblast_cooldown)
 		return
-	spell_container = spell_container_scene.instantiate() as Control
-	
-	if not spell_container:
-		push_error("Не удалось создать SpellContainer!")
+		
+	var battle_scene = get_tree().current_scene as Battle
+	if not battle_scene or not is_instance_valid(battle_scene.player): return
+
+	battle_scene.player.play_attack()
+
+	if not is_fireblast_upgraded:
+		print("Применен Fireblast!")
+		for enemy in battle_scene.enemies:
+			if is_instance_valid(enemy) and enemy.hp > 0:
+				enemy.take_damage(5, "fireblast")
+				if enemy.has_method("apply_debuff"):
+					enemy.apply_debuff("on_fire", 2)
+		fireblast_cooldown = 3
+	else:
+		if not battle_scene.player.spend_energy(3):
+			print("Недостаточно энергии для Fireball (нужно 3)!")
+			return
+			
+		print("Применен Улучшенный Fireball!")
+		for enemy in battle_scene.enemies:
+			if is_instance_valid(enemy) and enemy.hp > 0:
+				enemy.take_damage(20, "fireball")
+				if enemy.has_method("apply_debuff"):
+					enemy.apply_debuff("on_fire", 2)
+		
+		is_fireblast_upgraded = false 
+	_on_end_turn()
+
+func _on_spell_button_b_pressed() -> void:
+	var battle_scene = get_tree().current_scene as Battle
+	if not battle_scene or not is_instance_valid(battle_scene.current_target):
+		print("Выберите цель (себя или союзника) для наложения щита!")
 		return
-	$UI.add_child(spell_container)
-	var infection_name := active_infection
-	if infection_name.is_empty():
-		push_warning("Текущее заражение не установлено!")
+		
+	var target = battle_scene.current_target
+	if not target.has_method("apply_buff"):
+		print("Эта цель не может принимать баффы!")
 		return
-	spell_container.set_spells(infection_name)
-	spell_container.visible = true
+
+	if is_shield_upgraded:
+		if not battle_scene.player.spend_energy(5):
+			print("Недостаточно энергии для Улучшенного щита (нужно 5)!")
+			return
+			
+		target.apply_buff("shield_lvl_3", 2)
+		if target.has_node("ShieldComponent") or "shield_charges" in target:
+			target.shield_charges = 2 # Защищает на 2 атаки
+		is_shield_upgraded = false # Сбрасываем бафф утилиты
+	else:
+		# Обычный щит: прокачивает уровни (стакается)
+		if target.has_method("get_buff_level"):
+			var current_lvl = target.get_buff_level("shield") # Функция проверки текущего лвла щита
+			var next_lvl = min(current_lvl + 1, 3)
+			target.apply_buff("shield_lvl_" + str(next_lvl), 2) # Накладываем/обновляем до 2 ходов
+		else:
+			# Если системы уровней еще нет, просто даем 1 уровень
+			target.apply_buff("shield_lvl_1", 2)
+
+	_on_end_turn()
+
+func _on_spell_button_c_pressed() -> void:
+	if utility_choice_panel:
+		utility_choice_panel.visible = true
+		print("Открыто меню выбора Utility навыков")

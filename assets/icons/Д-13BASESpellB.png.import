@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://mqmj0nfpq2lo"
-path="res://.godot/imported/spell_utl_magical_girl.png-d77a7276f9c77c2ccb14a5234d9c74ab.ctex"
+uid="uid://1llwcjg4nnfc"
+path="res://.godot/imported/Д-13BASESpellB.png-651e671676e7d9de23d3e759857b603e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/icons/spell_utl_magical_girl.png"
-dest_files=["res://.godot/imported/spell_utl_magical_girl.png-d77a7276f9c77c2ccb14a5234d9c74ab.ctex"]
+source_file="res://assets/icons/Д-13BASESpellB.png"
+dest_files=["res://.godot/imported/Д-13BASESpellB.png-651e671676e7d9de23d3e759857b603e.ctex"]
 
 [params]
 

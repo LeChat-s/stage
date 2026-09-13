@@ -95,35 +95,57 @@ tracks/0/keys = {
 "values": [40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51]
 }
 
+[sub_resource type="Animation" id="Animation_14gqg"]
+resource_name = "idle_magical_girl"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.02500001),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [60]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_14gqg"]
 _data = {
 &"RESET": SubResource("Animation_weow4"),
 &"attack_battle": SubResource("Animation_5cdk3"),
-&"idle_battle": SubResource("Animation_uv1gr")
+&"idle_battle": SubResource("Animation_uv1gr"),
+&"idle_magical_girl": SubResource("Animation_14gqg")
 }
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_5cdk3"]
+radius = 44.0
+height = 160.0
 
 [node name="PlayerInBattle" type="Node2D" unique_id=270825366]
 script = ExtResource("1_j5cyl")
 
 [node name="CatchUpBar" type="ProgressBar" parent="." unique_id=610715414]
-offset_left = 168.0
-offset_top = 395.0
-offset_right = 290.0
-offset_bottom = 422.0
+offset_left = -59.0
+offset_top = 11.0
+offset_right = 63.0
+offset_bottom = 38.0
 theme_override_styles/background = SubResource("StyleBoxFlat_mn1mn")
 theme_override_styles/fill = SubResource("StyleBoxFlat_pwttg")
 value = 75.0
 show_percentage = false
+metadata/_edit_use_anchors_ = true
 
 [node name="HPBar" type="ProgressBar" parent="." unique_id=2030033161]
-offset_left = 168.0
-offset_top = 395.0
-offset_right = 290.0
-offset_bottom = 422.0
+offset_left = -59.0
+offset_top = 11.0
+offset_right = 63.0
+offset_bottom = 38.0
 theme_override_styles/background = SubResource("StyleBoxFlat_xpvo7")
 theme_override_styles/fill = SubResource("StyleBoxFlat_weow4")
 value = 30.0
 show_percentage = false
+metadata/_edit_use_anchors_ = true
 
 [node name="HPText" type="Label" parent="HPBar" unique_id=777203884]
 z_index = 2
@@ -136,6 +158,7 @@ grow_vertical = 2
 theme_override_fonts/font = ExtResource("2_weow4")
 horizontal_alignment = 1
 vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
 
 [node name="Block" type="Label" parent="HPBar" unique_id=528087154]
 layout_mode = 0
@@ -147,6 +170,7 @@ theme_override_fonts/font = ExtResource("2_weow4")
 theme_override_styles/normal = SubResource("StyleBoxFlat_vm073")
 horizontal_alignment = 1
 vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
 
 [node name="Status" type="HBoxContainer" parent="HPBar" unique_id=490705730]
 layout_mode = 0
@@ -155,25 +179,26 @@ offset_top = 31.0
 offset_right = 142.0
 offset_bottom = 54.0
 script = ExtResource("3_5cdk3")
-
-[node name="Energy" type="Label" parent="." unique_id=36640031]
-offset_left = 104.0
-offset_top = 291.0
-offset_right = 161.0
-offset_bottom = 334.0
+metadata/_edit_use_anchors_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1398213391]
 texture_filter = 1
-position = Vector2(227, 319)
+position = Vector2(0, -65)
 scale = Vector2(2, 2)
 texture = ExtResource("2_os80c")
 hframes = 10
-vframes = 6
+vframes = 24
 frame = 41
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1454797059]
 libraries/ = SubResource("AnimationLibrary_14gqg")
-autoplay = &"idle_battle"
+autoplay = &"idle_magical_girl"
+
+[node name="Area2D" type="Area2D" parent="." unique_id=2104645067]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=580648984]
+position = Vector2(0, -71)
+shape = SubResource("CapsuleShape2D_5cdk3")
 
 [connection signal="block_changed" from="." to="." method="_on_block_changed"]
 [connection signal="energy_changed" from="." to="." method="_on_energy_changed"]

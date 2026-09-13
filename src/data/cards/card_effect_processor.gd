@@ -43,18 +43,20 @@ static func _static_init() -> void:
 		}
 	}
 
-static func process_card(card_data: CardData, battle: Battle, selected_target: EnemyInBattle = null) -> void:
+static func process_card(card_data: CardData, battle: Battle, selected_target: Node2D = null) -> void:
 	var final_dmg = _calculate_modified_damage(card_data.dmg, battle)
 	var final_shield = _calculate_modified_shield(card_data.shild, battle)
-	
+	var active_target: Node2D = selected_target
+	if not is_instance_valid(active_target):
+		active_target = battle.current_target
+
 	if final_dmg > 0:
 		battle.player.play_attack()
 		match card_data.target_type:
 			CardData.TargetType.ENEMY:
-				if is_instance_valid(selected_target):
-					selected_target.take_damage(final_dmg, card_data.id, card_data.damage_type)
-				elif is_instance_valid(battle.selected_enemy_target):
-					battle.selected_enemy_target.take_damage(final_dmg, card_data.id, card_data.damage_type)
+				if is_instance_valid(active_target) and active_target.has_method("take_damage"):
+					active_target.take_damage(final_dmg, card_data.id, card_data.damage_type)
+					print("Атакованный враг ", active_target)
 				else:
 					print("Предупреждение: Нет выбранной цели для одиночной атаки!")
 					
@@ -62,27 +64,33 @@ static func process_card(card_data: CardData, battle: Battle, selected_target: E
 				for enemy in battle.enemies:
 					if is_instance_valid(enemy) and enemy.hp > 0:
 						enemy.take_damage(final_dmg, card_data.id, card_data.damage_type)
+			CardData.TargetType.SELF:
+				battle.player.take_damage(final_dmg, card_data.damage_type)
 				
-				if is_instance_valid(selected_target):
-					selected_target.take_damage(final_dmg, card_data.id, card_data.damage_type)
+			CardData.TargetType.ALL_HEROES:
+				battle.player.take_damage(final_dmg, card_data.damage_type)
 
 	if final_shield > 0:
-		battle.player.add_block(final_shield)
-		
-	for effect_data in card_data.effects:
-		if not effect_data is Dictionary:
-			print("Ошибка: Элемент эффекта не является Словарем!")
-			continue
-			
-		var effect: Dictionary = effect_data
-		var effect_id = effect.get("id", "")
-		
-		if effect_registry.has(effect_id):
-			effect_registry[effect_id]["method"].call(battle, effect, selected_target)
-			_update_ui_effects(battle, effect_id)
-		else:
-			print("Эффект не найден: ", effect_id)
-
+		match card_data.target_type:
+			CardData.TargetType.SELF:
+				battle.player.add_block(final_shield)
+				
+			CardData.TargetType.ENEMY:
+				if is_instance_valid(active_target) and active_target.has_method("add_block"):
+					active_target.add_block(final_shield)
+				else:
+					print("Предупреждение: Цель не может получить блок или не выбрана!")
+			CardData.TargetType.ALL_ENEMIES:
+				for enemy in battle.enemies:
+					if is_instance_valid(enemy) and enemy.has_method("add_block"):
+						enemy.add_block(final_shield)
+						
+			CardData.TargetType.ALL_HEROES:
+				battle.player.add_block(final_shield)
+				if battle.has_node("Summons"):
+					for summon in battle.get_node("Summons").get_children():
+						if summon.has_method("add_block"):
+							summon.add_block(final_shield)
 
 static func _update_ui_effects(battle: Battle, effect_id: String) -> void:
 	var effect_info = effect_registry[effect_id]

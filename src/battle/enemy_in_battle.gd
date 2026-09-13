@@ -62,7 +62,7 @@ func _on_click_zone_input_event(_viewport: Node, event: InputEvent, _shape_idx: 
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var battle_scene = get_tree().current_scene as Battle
 		if battle_scene:
-			battle_scene.select_new_target(self)
+			battle_scene.select_new_target(self) 
 
 func take_damage(amount: int, effect_name: String = "default_attack", type: GameStateClass.DamageType = GameStateClass.DamageType.PHYSICAL) -> void:
 	var type_int = int(type)
@@ -233,7 +233,20 @@ func _on_on_intent_changed(text: String) -> void:
 	intent_text.text = text
 
 func set_highlight(active: bool) -> void:
+	var my_sprite = $EnemySprite
+	if not my_sprite: return
+		
 	if active:
-		modulate = Color(1.5, 1.5, 1.2, 1.0)
+		if not my_sprite.material is ShaderMaterial:
+			var shader_res = load("res://src/shaders/outline.gdshader") as Shader
+			if shader_res:
+				var shader_mat = ShaderMaterial.new()
+				shader_mat.shader = shader_res
+				my_sprite.material = shader_mat
+		
+		if my_sprite.material is ShaderMaterial:
+			my_sprite.material.set_shader_parameter("width", 2.0)
+			my_sprite.material.set_shader_parameter("outline_color", Color(0.804, 0.731, 0.318, 1.0)) 
 	else:
-		modulate = Color.WHITE
+		if my_sprite.material is ShaderMaterial:
+			my_sprite.material.set_shader_parameter("width", 0.0)
