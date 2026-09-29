@@ -12,6 +12,9 @@ signal died
 @onready var hp_text: Label = $HPBar/HPText
 @onready var catch_up_bar: ProgressBar = $CatchUpBar
 @onready var effects_ui: EffectContainer = $HPBar/Status
+@onready var magical_girl_sprite: Sprite2D = $MagicalGirlSprite
+
+var is_magical_girl: bool = false
 var hp: int
 var clas: String
 var max_hp: int
@@ -19,6 +22,7 @@ var block: int
 var energy: int
 var max_energy: int = 5
 var damage_popup_scene: PackedScene = preload("res://src/ui/dmg_popups.tscn")
+var buffs: Buff = Buff.new()
 
 func _ready() -> void:
 	animation_player.animation_finished.connect(_on_animation_finished)
@@ -29,22 +33,45 @@ func _ready() -> void:
 func setup(player_data: Dictionary) -> void:
 	hp = GameState.player_hp
 	max_hp = player_data["max_hp"]
+
 	if has_node("CatchUpBar"):
 		$CatchUpBar.value = max_hp
+
 	energy = max_energy
+	is_magical_girl = false
+
+	if magical_girl_sprite:
+		magical_girl_sprite.visible = false
+
 	emit_signals()
 	animation_player.play("idle_battle")
 
 func _on_animation_finished(anim_name: StringName) -> void:
 	if anim_name == "attack_battle":
-		animation_player.play("idle_battle")
+		if is_magical_girl:
+			animation_player.play("idle_magical_girl")
+		else:
+			animation_player.play("idle_battle")
 
-func play_attack()-> void:
+func play_attack() -> void:
 	animation_player.play("attack_battle")
 
+func set_magical_girl_form(active: bool) -> void:
+	is_magical_girl = active
+
+	if magical_girl_sprite:
+		magical_girl_sprite.visible = active
+
+	$Sprite2D.visible = not active
+
+	if active:
+		animation_player.play("idle_magical_girl")
+	else:
+		animation_player.play("idle_battle")
+		
 func take_damage(amount: int, type: GameStateClass.DamageType = GameStateClass.DamageType.PHYSICAL) -> void:
 	var processed_damage: int = GameState.calculate_incoming_damage(amount, int(type))
-
+	processed_damage = buffs.process_damage(processed_damage)
 	if damage_popup_scene:
 		var popup = damage_popup_scene.instantiate()
 		get_tree().current_scene.add_child(popup)
@@ -77,6 +104,7 @@ func spend_energy(amount: int) -> bool:
 	return false
 
 func reset_turn() -> void:
+	buffs.tick()
 	block = 0
 	var bonus = GameState.get_bonus_energy()
 	energy = max_energy + bonus
@@ -143,3 +171,6 @@ func _on_click_zone_input_event(_viewport: Node, event: InputEvent, _shape_idx: 
 		var battle_scene = get_tree().current_scene as Battle
 		if battle_scene:
 			battle_scene.select_new_target(self)
+
+func apply_buff(buff_id: String, duration: int = 1, level: int = 0) -> void:
+	buffs.apply(buff_id, duration, level)
