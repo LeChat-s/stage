@@ -1,0 +1,84 @@
+[gd_scene format=3 uid="uid://u13po6ibrvgr"]
+
+[ext_resource type="Script" uid="uid://42hvjeaa2vc4" path="res://src/cutscene/test/cutscene_test.gd" id="1_h47xp"]
+[ext_resource type="Texture2D" uid="uid://c6ibv7av3l6ap" path="res://assets/enemy/a1/A-1.png" id="3_ao4n7"]
+[ext_resource type="Resource" uid="uid://cyh4dwf5qxaqw" path="res://src/cutscene/test/test.tres" id="3_petly"]
+[ext_resource type="Script" uid="uid://b2hikn64582xd" path="res://src/cutscene/runtime/cutscene_binding_context.gd" id="4_petly"]
+[ext_resource type="Script" uid="uid://8rafxs4pumve" path="res://src/cutscene/data/cutscene_binding.gd" id="5_ao4n7"]
+[ext_resource type="Script" uid="uid://c3jxn8hv315s2" path="res://src/cutscene/runtime/cutscene_trigger.gd" id="6_ao4n7"]
+
+[sub_resource type="Animation" id="Animation_qywi7"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+
+[sub_resource type="Animation" id="Animation_syfkm"]
+resource_name = "idle"
+length = 0.6
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [0, 1, 2]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_sufok"]
+_data = {
+&"RESET": SubResource("Animation_qywi7"),
+&"idle": SubResource("Animation_syfkm")
+}
+
+[sub_resource type="Resource" id="Resource_petly"]
+script = ExtResource("5_ao4n7")
+id = &"hero"
+target_path = NodePath("../Hero")
+metadata/_custom_type_script = "uid://8rafxs4pumve"
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_bhunq"]
+
+[node name="CutsceneTest" type="Node2D" unique_id=1169809228]
+script = ExtResource("1_h47xp")
+cutscene = ExtResource("3_petly")
+
+[node name="Hero" type="Node2D" parent="." unique_id=1787631073]
+position = Vector2(76, 321)
+
+[node name="Sprite2D" type="Sprite2D" parent="Hero" unique_id=729234375]
+texture = ExtResource("3_ao4n7")
+hframes = 5
+vframes = 10
+frame = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Hero" unique_id=1636828108]
+libraries/ = SubResource("AnimationLibrary_sufok")
+
+[node name="CutsceneBindings" type="Node" parent="." unique_id=1061038609]
+script = ExtResource("4_petly")
+bindings = Array[ExtResource("5_ao4n7")]([SubResource("Resource_petly")])
+metadata/_custom_type_script = "uid://b2hikn64582xd"
+
+[node name="CutsceneTrigger" type="Area2D" parent="." unique_id=48201093]
+script = ExtResource("6_ao4n7")
+cutscene = ExtResource("3_petly")
+trigger_mode = 0
+metadata/_custom_type_script = "uid://c3jxn8hv315s2"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CutsceneTrigger" unique_id=312915854]
+shape = SubResource("CapsuleShape2D_bhunq")

@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="CutsceneData" format=3 uid="uid://ddrri5vmgtygs"]
+
+[ext_resource type="Script" uid="uid://c8ny00ybyrnms" path="res://src/cutscene/data/cutscene_action.gd" id="1_mp7oy"]
+[ext_resource type="Script" uid="uid://d2pjvt00eg56j" path="res://src/cutscene/data/cutscene_data.gd" id="2_62c1s"]
+[ext_resource type="Script" uid="uid://bl8svj60padfd" path="res://src/cutscene/data/animation_action.gd" id="3_nsg4v"]
+[ext_resource type="Script" uid="uid://cmvatk2bo24pc" path="res://src/cutscene/data/dialogue_action.gd" id="4_nsg4v"]
+
+[sub_resource type="Resource" id="Resource_8wpt3"]
+script = ExtResource("4_nsg4v")
+speaker = "Д-13"
+text = "Где я..?"
+start_time = 2.0
+duration = 3.0
+metadata/_custom_type_script = "uid://cmvatk2bo24pc"
+
+[sub_resource type="Resource" id="Resource_62c1s"]
+script = ExtResource("3_nsg4v")
+target_id = &"player"
+animation = &"wake_up"
+duration = 1.2
+metadata/_custom_type_script = "uid://bl8svj60padfd"
+
+[resource]
+resource_local_to_scene = true
+script = ExtResource("2_62c1s")
+title = "WakeUp"
+duration = 5.0
+binding_ids = Array[StringName]([&"player", &"boss", &"camera"])
+actions = Array[ExtResource("1_mp7oy")]([SubResource("Resource_8wpt3"), SubResource("Resource_62c1s")])
+metadata/_custom_type_script = "uid://d2pjvt00eg56j"

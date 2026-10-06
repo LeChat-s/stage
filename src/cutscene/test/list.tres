@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="CutsceneBinding" format=3 uid="uid://dnqojenpncidt"]
+
+[ext_resource type="Script" uid="uid://8rafxs4pumve" path="res://src/cutscene/data/cutscene_binding.gd" id="1_pnmg8"]
+
+[resource]
+script = ExtResource("1_pnmg8")
+id = &"player"
+target_path = NodePath("../Player")
+metadata/_custom_type_script = "uid://8rafxs4pumve"
