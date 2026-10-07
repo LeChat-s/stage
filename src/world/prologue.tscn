@@ -95,7 +95,7 @@ tile_map_data = PackedByteArray("AAAAAAcAAAABAAAAAAAAAAgAAAABAAEAAAAAAAoAAAABAAM
 tile_set = SubResource("TileSet_415fx")
 
 [node name="Player" parent="." unique_id=980014995 groups=["player"] instance=ExtResource("2_pw4xv")]
-position = Vector2(97, 519)
+position = Vector2(213, 566)
 
 [node name="Гарбушка" parent="." unique_id=1142740305 groups=["enemy"] instance=ExtResource("3_x7sps")]
 position = Vector2(736, 514)
@@ -158,10 +158,12 @@ color = Color(0.0891, 0.088, 0.11, 1)
 position = Vector2(215, 566)
 script = ExtResource("7_pmnr0")
 cutscene = ExtResource("8_lldob")
+trigger_mode = 0
 binding_context_path = NodePath("../CutsceneBindings")
 metadata/_custom_type_script = "uid://c3jxn8hv315s2"
 
 [node name="CollisionShape" type="CollisionShape2D" parent="CutsceneTrigger" unique_id=425328382]
+position = Vector2(-1, 1)
 shape = SubResource("CircleShape2D_bhunq")
 
 [node name="CutsceneBindings" type="Node" parent="." unique_id=707604691]

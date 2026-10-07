@@ -9,7 +9,7 @@
 
 [sub_resource type="Resource" id="Resource_1r1vs"]
 script = ExtResource("2_oepk6")
-start_time = 0.4
+start_time = 0.6000000000000001
 duration = 0.5
 metadata/_custom_type_script = "uid://ctm1qrpdy1lxg"
 
@@ -25,7 +25,7 @@ metadata/_custom_type_script = "uid://cmvatk2bo24pc"
 script = ExtResource("4_44hfi")
 target_id = &"hero"
 target_position = Vector2(700, 360)
-start_time = 2.0
+start_time = 2.4000000000000004
 duration = 3.0
 metadata/_custom_type_script = "uid://catl1baumt7f6"
 
@@ -33,21 +33,21 @@ metadata/_custom_type_script = "uid://catl1baumt7f6"
 script = ExtResource("5_t1kfq")
 target_id = &"hero"
 animation = &"idle"
-start_time = 4.0
+start_time = 2.8000000000000003
 duration = 1.0
 metadata/_custom_type_script = "uid://bl8svj60padfd"
 
 [sub_resource type="Resource" id="Resource_t1kfq"]
 script = ExtResource("3_t1kfq")
 speaker = "вфцфыв"
-text = "фыввцййуйцуйцуфыв"
-start_time = 4.2
+text = "фыввцййуйцуйцуфывфвыввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввввв"
+start_time = 4.6000000000000005
 duration = 1.0
 
 [resource]
 script = ExtResource("2_1o1yj")
 title = "Test Cutscene"
-duration = 5.0
+duration = 5.2
 binding_ids = Array[StringName]([&"hero"])
 actions = Array[ExtResource("1_t8fjx")]([SubResource("Resource_1r1vs"), SubResource("Resource_x2dvb"), SubResource("Resource_h47xp"), SubResource("Resource_oepk6"), SubResource("Resource_t1kfq")])
 metadata/_custom_type_script = "uid://d2pjvt00eg56j"
