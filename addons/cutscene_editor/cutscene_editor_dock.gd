@@ -6,7 +6,7 @@ const TimelineScript = preload(
 	"res://addons/cutscene_editor/cutscene_timeline.gd"
 )
 
-
+var plugin = null
 var editor_interface = null
 var undo_redo = null
 
@@ -16,6 +16,7 @@ var current_cutscene: CutsceneData = null
 
 var title_label: Label
 var duration_label: Label
+var current_time_label: Label
 
 var action_list: ItemList
 
@@ -66,7 +67,12 @@ func _build_ui() -> void:
 	duration_label.text = "Duration: 0.0"
 
 	header.add_child(duration_label)
+	
+	current_time_label = Label.new()
 
+	current_time_label.text = "Time: 0.00"
+
+	header.add_child(current_time_label)
 
 	save_button = Button.new()
 
@@ -189,7 +195,12 @@ func _build_ui() -> void:
 	timeline.action_selected.connect(
 		_on_timeline_action_selected
 	)
-
+	timeline.action_clicked.connect(
+		_on_timeline_action_clicked
+	)
+	timeline.time_changed.connect(
+		_on_timeline_time_changed
+	)
 	timeline_scroll.add_child(
 		timeline
 	)
@@ -308,6 +319,7 @@ func _refresh() -> void:
 		% current_cutscene.duration
 	)
 
+	current_time_label.text = "Time: 0.00"
 
 	for i in current_cutscene.actions.size():
 
@@ -408,9 +420,16 @@ func _on_action_selected(
 
 
 	if editor_interface != null:
+
 		editor_interface.edit_resource(
 			action
 		)
+
+		if plugin != null:
+
+			plugin.call_deferred(
+				"show_dock"
+			)
 
 
 	timeline.set_selected_action(
@@ -425,19 +444,14 @@ func _on_timeline_action_selected(
 	if index < 0:
 		return
 
-
 	if index >= action_list.item_count:
 		return
-
 
 	action_list.select(
 		index
 	)
 
-
-	_on_action_selected(
-		index
-	)
+	delete_button.disabled = false
 
 
 func _on_add_action_pressed(
@@ -675,3 +689,33 @@ func save_cutscene() -> void:
 			"Cutscene Editor: failed to save cutscene. Error: %s"
 			% error
 		)
+
+func _on_timeline_time_changed(
+	time: float
+) -> void:
+
+	if current_time_label == null:
+		return
+
+	current_time_label.text = (
+		"Time: %.2f"
+		% time
+	)
+
+func _on_timeline_action_clicked(
+	index: int
+) -> void:
+
+	if index < 0:
+		return
+
+	if index >= action_list.item_count:
+		return
+
+	action_list.select(
+		index
+	)
+
+	_on_action_selected(
+		index
+	)

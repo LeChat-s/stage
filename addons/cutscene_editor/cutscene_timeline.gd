@@ -3,7 +3,8 @@ extends Control
 
 
 signal action_selected(index)
-
+signal time_changed(time)
+signal action_clicked(index)
 
 const PIXELS_PER_SECOND: float = 100.0
 const RULER_HEIGHT: float = 30.0
@@ -18,10 +19,13 @@ const MIN_ACTION_DURATION: float = 0.1
 var cutscene: CutsceneData = null
 var selected_index: int = -1
 
+var current_time: float = 0.0
+
 var undo_redo = null
 
 var dragging: bool = false
 var resizing: bool = false
+var scrubbing: bool = false
 
 var drag_index: int = -1
 
@@ -37,7 +41,6 @@ func _ready() -> void:
 func set_undo_redo(
 	value
 ) -> void:
-
 	undo_redo = value
 
 
@@ -54,9 +57,10 @@ func set_cutscene(
 				_on_cutscene_changed
 			)
 
-
 	cutscene = value
 
+	selected_index = -1
+	current_time = 0.0
 
 	if cutscene != null:
 
@@ -64,11 +68,7 @@ func set_cutscene(
 			_on_cutscene_changed
 		)
 
-
-	selected_index = -1
-
 	_update_size()
-
 	queue_redraw()
 
 
@@ -79,6 +79,53 @@ func set_selected_action(
 	selected_index = index
 
 	queue_redraw()
+
+
+func set_current_time(
+	value: float
+) -> void:
+
+	var max_time := _get_timeline_duration()
+
+	current_time = clamp(
+		_snap_time(value),
+		0.0,
+		max_time
+	)
+
+	time_changed.emit(
+		current_time
+	)
+
+	queue_redraw()
+
+
+func get_current_time() -> float:
+	return current_time
+
+
+func _get_timeline_duration() -> float:
+
+	if cutscene == null:
+		return 1.0
+
+	var result: float = max(
+		cutscene.duration,
+		1.0
+	)
+
+	for action in cutscene.actions:
+
+		if action == null:
+			continue
+
+		result = max(
+			result,
+			action.start_time
+			+ action.duration
+		)
+
+	return result
 
 
 func _update_size() -> void:
@@ -92,25 +139,7 @@ func _update_size() -> void:
 
 		return
 
-
-	var max_time: float = max(
-		cutscene.duration,
-		1.0
-	)
-
-
-	for action in cutscene.actions:
-
-		if action == null:
-			continue
-
-
-		max_time = max(
-			max_time,
-			action.start_time
-			+ action.duration
-		)
-
+	var max_time := _get_timeline_duration()
 
 	var height: float = max(
 		160.0,
@@ -120,9 +149,9 @@ func _update_size() -> void:
 		+ 20.0
 	)
 
-
 	custom_minimum_size = Vector2(
-		max_time * PIXELS_PER_SECOND
+		max_time
+		* PIXELS_PER_SECOND
 		+ LEFT_MARGIN
 		+ 120.0,
 		height
@@ -139,41 +168,22 @@ func _draw() -> void:
 		Color("#18181d")
 	)
 
-
 	if cutscene == null:
 		return
-
 
 	_draw_ruler()
 	_draw_rows()
 	_draw_actions()
+	_draw_playhead()
 
 
 func _draw_ruler() -> void:
 
-	var duration: float = max(
-		cutscene.duration,
-		1.0
-	)
-
-
-	for action in cutscene.actions:
-
-		if action == null:
-			continue
-
-
-		duration = max(
-			duration,
-			action.start_time
-			+ action.duration
-		)
-
+	var duration := _get_timeline_duration()
 
 	var seconds := int(
 		ceil(duration)
 	)
-
 
 	for second in range(
 		seconds + 1
@@ -184,7 +194,6 @@ func _draw_ruler() -> void:
 			+ float(second)
 			* PIXELS_PER_SECOND
 		)
-
 
 		draw_line(
 			Vector2(
@@ -199,9 +208,7 @@ func _draw_ruler() -> void:
 			1.0
 		)
 
-
 		var font := ThemeDB.fallback_font
-
 
 		draw_string(
 			font,
@@ -216,7 +223,6 @@ func _draw_ruler() -> void:
 			Color("#bcbcc4")
 		)
 
-
 		for subdivision in range(
 			1,
 			10
@@ -229,10 +235,8 @@ func _draw_ruler() -> void:
 				/ 10.0
 			)
 
-
 			if sub_x >= size.x:
 				continue
-
 
 			draw_line(
 				Vector2(
@@ -253,14 +257,12 @@ func _draw_rows() -> void:
 	if cutscene == null:
 		return
 
-
 	for i in cutscene.actions.size():
 
 		var y := (
 			RULER_HEIGHT
 			+ float(i) * ROW_HEIGHT
 		)
-
 
 		var row_rect := Rect2(
 			0.0,
@@ -269,14 +271,12 @@ func _draw_rows() -> void:
 			ROW_HEIGHT
 		)
 
-
 		if i % 2 == 0:
 
 			draw_rect(
 				row_rect,
 				Color("#1d1d23")
 			)
-
 
 		draw_line(
 			Vector2(
@@ -297,7 +297,6 @@ func _draw_actions() -> void:
 	if cutscene == null:
 		return
 
-
 	for i in cutscene.actions.size():
 
 		var action := cutscene.actions[i]
@@ -305,12 +304,10 @@ func _draw_actions() -> void:
 		if action == null:
 			continue
 
-
 		var rect := _get_action_rect(
 			action,
 			i
 		)
-
 
 		if i == selected_index:
 
@@ -321,20 +318,16 @@ func _draw_actions() -> void:
 				2.0
 			)
 
-
 		draw_rect(
 			rect,
 			_get_action_color(action)
 		)
 
-
 		var label := _get_action_name(
 			action
 		)
 
-
 		var font := ThemeDB.fallback_font
-
 
 		draw_string(
 			font,
@@ -353,26 +346,39 @@ func _draw_actions() -> void:
 		)
 
 
-		if i == selected_index:
+func _draw_playhead() -> void:
 
-			var edge_x := (
-				rect.position.x
-				+ rect.size.x
-			)
+	var x := (
+		LEFT_MARGIN
+		+ current_time
+		* PIXELS_PER_SECOND
+	)
 
+	x = floor(x) + 0.5
 
-			draw_line(
-				Vector2(
-					edge_x,
-					rect.position.y + 3.0
-				),
-				Vector2(
-					edge_x,
-					rect.end.y - 3.0
-				),
-				Color("#ffffff"),
-				2.0
-			)
+	draw_line(
+		Vector2(
+			x,
+			0.0
+		),
+		Vector2(
+			x,
+			size.y
+		),
+		Color("#e65c5c"),
+		2.0
+	)
+
+	var points := PackedVector2Array([
+		Vector2(x - 6.0, 0.0),
+		Vector2(x + 6.0, 0.0),
+		Vector2(x, 8.0)
+	])
+
+	draw_colored_polygon(
+		points,
+		Color("#e65c5c")
+	)
 
 
 func _get_action_rect(
@@ -386,13 +392,11 @@ func _get_action_rect(
 		* PIXELS_PER_SECOND
 	)
 
-
 	var width := max(
 		action.duration
 		* PIXELS_PER_SECOND,
 		8.0
 	)
-
 
 	var y := (
 		RULER_HEIGHT
@@ -400,7 +404,6 @@ func _get_action_rect(
 		* ROW_HEIGHT
 		+ 5.0
 	)
-
 
 	return Rect2(
 		x,
@@ -418,6 +421,75 @@ func _gui_input(
 		return
 
 
+	if not event is InputEventMouseButton:
+		return
+
+
+	var mouse_event := (
+		event as InputEventMouseButton
+	)
+
+
+	if mouse_event.button_index != MOUSE_BUTTON_LEFT:
+		return
+
+
+	if not mouse_event.pressed:
+		return
+
+
+	if mouse_event.position.y <= RULER_HEIGHT:
+
+		scrubbing = true
+
+		_set_time_from_mouse(
+			mouse_event.position.x
+		)
+
+		accept_event()
+
+		return
+
+
+	_begin_mouse_action(
+		mouse_event.position
+	)
+
+	accept_event()
+
+func _input(
+	event: InputEvent
+) -> void:
+
+	if not dragging and not resizing and not scrubbing:
+		return
+
+
+	if event is InputEventMouseMotion:
+
+		var motion := (
+			event as InputEventMouseMotion
+		)
+
+
+		if scrubbing:
+
+			_set_time_from_mouse(
+				motion.position.x
+			)
+
+		elif dragging or resizing:
+
+			_update_mouse_action(
+				motion.position
+			)
+
+
+		get_viewport().set_input_as_handled()
+
+		return
+
+
 	if event is InputEventMouseButton:
 
 		var mouse_event := (
@@ -425,19 +497,19 @@ func _gui_input(
 		)
 
 
-		if mouse_event.button_index != (
-			MOUSE_BUTTON_LEFT
-		):
+		if mouse_event.button_index != MOUSE_BUTTON_LEFT:
 			return
 
 
 		if mouse_event.pressed:
+			return
 
-			_begin_mouse_action(
-				mouse_event.position
-			)
 
-			accept_event()
+		if scrubbing:
+
+			scrubbing = false
+
+			get_viewport().set_input_as_handled()
 
 			return
 
@@ -446,22 +518,22 @@ func _gui_input(
 
 			_finish_mouse_action()
 
-			accept_event()
+			get_viewport().set_input_as_handled()
 
 			return
 
+func _set_time_from_mouse(
+	mouse_x: float
+) -> void:
 
-	if event is InputEventMouseMotion:
+	var new_time := (
+		mouse_x
+		- LEFT_MARGIN
+	) / PIXELS_PER_SECOND
 
-		if not dragging and not resizing:
-			return
-
-
-		_update_mouse_action(
-			(event as InputEventMouseMotion).position
-		)
-
-		accept_event()
+	set_current_time(
+		new_time
+	)
 
 
 func _begin_mouse_action(
@@ -472,10 +544,12 @@ func _begin_mouse_action(
 		mouse_position
 	)
 
-
 	if index < 0:
+
 		selected_index = -1
+
 		queue_redraw()
+
 		return
 
 
@@ -485,11 +559,12 @@ func _begin_mouse_action(
 		index
 	)
 
-
 	var action := cutscene.actions[index]
 
 	if action == null:
+
 		queue_redraw()
+
 		return
 
 
@@ -498,10 +573,11 @@ func _begin_mouse_action(
 		index
 	)
 
-
 	drag_index = index
 
-	drag_start_mouse_x = mouse_position.x
+	drag_start_mouse_x = (
+		mouse_position.x
+	)
 
 	drag_initial_start = (
 		action.start_time
@@ -511,12 +587,10 @@ func _begin_mouse_action(
 		action.duration
 	)
 
-
 	var distance_to_edge := abs(
 		rect.end.x
 		- mouse_position.x
 	)
-
 
 	if distance_to_edge <= EDGE_THRESHOLD:
 
@@ -528,7 +602,6 @@ func _begin_mouse_action(
 		dragging = true
 		resizing = false
 
-
 	queue_redraw()
 
 
@@ -539,31 +612,25 @@ func _update_mouse_action(
 	if drag_index < 0:
 		return
 
-
 	if drag_index >= cutscene.actions.size():
 		return
-
 
 	var action := (
 		cutscene.actions[drag_index]
 	)
 
-
 	if action == null:
 		return
-
 
 	var delta_x := (
 		mouse_position.x
 		- drag_start_mouse_x
 	)
 
-
 	var delta_time := (
 		delta_x
 		/ PIXELS_PER_SECOND
 	)
-
 
 	if dragging:
 
@@ -572,17 +639,14 @@ func _update_mouse_action(
 			+ delta_time
 		)
 
-
 		new_start = max(
 			0.0,
 			new_start
 		)
 
-
 		new_start = _snap_time(
 			new_start
 		)
-
 
 		action.start_time = new_start
 
@@ -594,22 +658,16 @@ func _update_mouse_action(
 			+ delta_time
 		)
 
-
 		new_duration = max(
 			MIN_ACTION_DURATION,
 			new_duration
 		)
 
-
 		new_duration = _snap_time(
 			new_duration
 		)
 
-
 		action.duration = new_duration
-
-
-	cutscene.emit_changed()
 
 	_update_size()
 
@@ -619,12 +677,16 @@ func _update_mouse_action(
 func _finish_mouse_action() -> void:
 
 	if drag_index < 0:
+
 		_reset_mouse_state()
+
 		return
 
 
 	if drag_index >= cutscene.actions.size():
+
 		_reset_mouse_state()
+
 		return
 
 
@@ -634,8 +696,13 @@ func _finish_mouse_action() -> void:
 
 
 	if action == null:
+
 		_reset_mouse_state()
+
 		return
+
+
+	var index := drag_index
 
 
 	var old_start := drag_initial_start
@@ -645,18 +712,26 @@ func _finish_mouse_action() -> void:
 	var new_duration := action.duration
 
 
-	if (
-		is_equal_approx(
+	var changed := (
+		not is_equal_approx(
 			old_start,
 			new_start
 		)
-		and is_equal_approx(
+		or not is_equal_approx(
 			old_duration,
 			new_duration
 		)
-	):
+	)
+
+
+	if not changed:
+
+		action_clicked.emit(
+			index
+		)
 
 		_reset_mouse_state()
+
 		return
 
 
@@ -666,7 +741,6 @@ func _finish_mouse_action() -> void:
 			"Edit Cutscene Action"
 		)
 
-
 		undo_redo.add_do_method(
 			_apply_action_timing.bind(
 				action,
@@ -674,7 +748,6 @@ func _finish_mouse_action() -> void:
 				new_duration
 			)
 		)
-
 
 		undo_redo.add_undo_method(
 			_apply_action_timing.bind(
@@ -684,9 +757,7 @@ func _finish_mouse_action() -> void:
 			)
 		)
 
-
 		undo_redo.commit_action()
-
 
 	else:
 
@@ -709,7 +780,6 @@ func _apply_action_timing(
 	if action == null:
 		return
 
-
 	action.start_time = start_time
 	action.duration = duration
 
@@ -727,6 +797,7 @@ func _reset_mouse_state() -> void:
 
 	dragging = false
 	resizing = false
+	scrubbing = false
 
 	drag_index = -1
 
@@ -744,27 +815,22 @@ func _get_action_index_at(
 	if position.y < RULER_HEIGHT:
 		return -1
 
-
 	for i in cutscene.actions.size():
 
 		var action := (
 			cutscene.actions[i]
 		)
 
-
 		if action == null:
 			continue
-
 
 		var rect := _get_action_rect(
 			action,
 			i
 		)
 
-
 		if rect.has_point(position):
 			return i
-
 
 	return -1
 
@@ -783,33 +849,22 @@ func _get_action_name(
 	action: CutsceneAction
 ) -> String:
 
-	var script: Script = action.get_script()
+	if action is DialogueAction:
+		return "Dialogue"
 
-	if script == null:
-		return "Action"
+	if action is AnimationAction:
+		return "Animation"
 
+	if action is MoveAction:
+		return "Move"
 
-	var global_name: StringName = (
-		script.get_global_name()
-	)
+	if action is WaitAction:
+		return "Wait"
 
-	if global_name == &"":
-		return "Action"
+	if action is FadeAction:
+		return "Fade"
 
-
-	var result: String = String(
-		global_name
-	)
-
-
-	if result.ends_with("Action"):
-
-		result = result.trim_suffix(
-			"Action"
-		)
-
-
-	return result
+	return "Action"
 
 
 func _get_action_color(
@@ -819,22 +874,17 @@ func _get_action_color(
 	if action is DialogueAction:
 		return Color("#704f8f")
 
-
 	if action is AnimationAction:
 		return Color("#3f7199")
-
 
 	if action is MoveAction:
 		return Color("#467c62")
 
-
 	if action is WaitAction:
 		return Color("#66666f")
 
-
 	if action is FadeAction:
 		return Color("#8a6b3d")
-
 
 	return Color("#55555c")
 
@@ -842,5 +892,15 @@ func _get_action_color(
 func _on_cutscene_changed() -> void:
 
 	_update_size()
+
+	var max_time := _get_timeline_duration()
+
+	if current_time > max_time:
+
+		current_time = max_time
+
+		time_changed.emit(
+			current_time
+		)
 
 	queue_redraw()

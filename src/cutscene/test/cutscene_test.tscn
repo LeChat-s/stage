@@ -78,6 +78,7 @@ metadata/_custom_type_script = "uid://b2hikn64582xd"
 script = ExtResource("6_ao4n7")
 cutscene = ExtResource("3_petly")
 trigger_mode = 0
+binding_context_path = NodePath("../CutsceneBindings")
 metadata/_custom_type_script = "uid://c3jxn8hv315s2"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CutsceneTrigger" unique_id=312915854]

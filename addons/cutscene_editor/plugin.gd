@@ -16,7 +16,8 @@ func _enter_tree() -> void:
 
 	dock.editor_interface = get_editor_interface()
 	dock.undo_redo = get_undo_redo()
-
+	dock.plugin = self
+	
 	add_control_to_bottom_panel(
 		dock,
 		"Cutscene"
@@ -62,10 +63,16 @@ func _edit(object: Object) -> void:
 
 
 func _clear() -> void:
+	pass
 
-	if dock != null:
-		dock.clear_cutscene()
+func show_dock() -> void:
 
+	if dock == null:
+		return
+
+	make_bottom_panel_item_visible(
+		dock
+	)
 
 func _save_external_data() -> void:
 
