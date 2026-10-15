@@ -9,7 +9,12 @@ id = "def_magical_barrier"
 name = "Волшебный барьер"
 shild = 8
 type = "defense"
+build_id = &"magical_girl"
 target_type = 1
-description = "Дает 8 щита. Если щит полностью разрушен врагом, дает +2 к заряду"
+effects = Array[Dictionary]([{
+"amount": 2,
+"id": "charge_on_block_break"
+}])
+description = "Дает 8 блока. Если этот блок полностью разрушен уроном, дает +2 Магического заряда."
 artwork = ExtResource("1_80bbf")
 metadata/_custom_type_script = "uid://c602y2ab5ly3b"

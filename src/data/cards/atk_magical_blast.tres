@@ -5,15 +5,19 @@
 
 [resource]
 script = ExtResource("2_gqcbl")
-id = "Волшебный взрыв"
-name = "Attack"
+id = "atk_magical_blast"
+name = "Волшебный взрыв"
 dmg = 10
 damage_type = 1
+build_id = &"magical_girl"
 type = "attack"
 effects = Array[Dictionary]([{
-"id": "double_dmg_if_charge_5"
+"charge_cost": 3,
+"extra_damage": 10,
+"id": "double_dmg_if_charge_5",
+"threshold": 5
 }])
-description = "аносит 10 урона. Если заряд > 5: тратит 3 заряда и наносит х2 урон."
+description = "Наносит 10 магического урона. При заряде выше 5 тратит 3 заряда и наносит дополнительный урон."
 effect_type = "attack_battle"
 artwork = ExtResource("1_kdk1d")
 metadata/_custom_type_script = "uid://c602y2ab5ly3b"

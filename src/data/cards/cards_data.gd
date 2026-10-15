@@ -1,3 +1,4 @@
+@tool
 class_name CardData
 extends Resource
 
@@ -11,9 +12,14 @@ enum TargetType { ENEMY, SELF, ALL_ENEMIES, ALL_HEROES }
 @export var cost: int = 1
 @export var type: String
 @export var target_type: TargetType = TargetType.ENEMY
-@export var effects: Array[Dictionary] = [] 
+@export var effects: Array[Dictionary] = []
 @export var description: String
 
+@export_category("Билд")
+@export var build_id: StringName = &""
+@export var contamination: ContaminationData
+
+@export_category("Визуал")
 @export var effect_type: String
 @export var artwork: Texture2D
 

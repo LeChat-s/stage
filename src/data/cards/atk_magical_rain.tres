@@ -10,11 +10,12 @@ name = "Волшебный дождь"
 dmg = 5
 damage_type = 2
 type = "attack"
+build_id = &"magical_girl"
 target_type = 2
 effects = Array[Dictionary]([{
 "id": "gain_charge_per_hit"
 }])
-description = "Наносит 5 урона всем врагам. Удар дает +1 к заряду."
+description = "Наносит 5 урона всем врагам. За каждого живого врага дает +1 Магического заряда."
 effect_type = "attack_battle"
 artwork = ExtResource("1_em330")
 metadata/_custom_type_script = "uid://c602y2ab5ly3b"

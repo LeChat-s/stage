@@ -29,7 +29,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/cutscene_editor/plugin.cfg")
+enabled=PackedStringArray("res://addons/build_editor/plugin.cfg", "res://addons/cutscene_editor/plugin.cfg")
 
 [global_group]
 

@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/card/atacck_explosion.png" id="1_art"]
+[ext_resource type="Script" path="res://src/data/cards/cards_data.gd" id="2_card"]
+
+[resource]
+script = ExtResource("2_card")
+id = "atk_doctor_incision"
+name = "Заражённый надрез"
+dmg = 4
+damage_type = 0
+cost = 1
+type = "attack"
+build_id = &"doctor"
+target_type = 0
+effects = Array[Dictionary]([{
+"damage_per_stack": 1,
+"damage_type": 0,
+"duration": 3,
+"id": "apply_status",
+"max_stacks": 10,
+"stacks": 2,
+"status": "poison"
+}, {
+"amount": 1,
+"id": "gain_build_resource"
+}])
+description = "Наносит 4 урона, накладывает 2 Яда на 3 хода и даёт 1 Вирулентность. Каждый стак Яда наносит 1 урон в начале хода врага."
+effect_type = "attack_battle"
+artwork = ExtResource("1_art")

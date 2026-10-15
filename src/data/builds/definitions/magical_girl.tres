@@ -1,0 +1,106 @@
+[gd_resource type="Resource" script_class="ContaminationData" load_steps=23 format=3]
+
+[ext_resource type="Script" path="res://src/data/builds/contamination_data.gd" id="1_build"]
+[ext_resource type="Script" path="res://src/data/builds/ability_data.gd" id="2_ability"]
+[ext_resource type="Script" path="res://src/data/builds/build_balance_data.gd" id="3_balance"]
+[ext_resource type="Script" path="res://src/data/builds/passive_data.gd" id="4_passive"]
+[ext_resource type="Texture2D" path="res://assets/icons/class_magical_girl.png" id="5_icon"]
+[ext_resource type="Texture2D" path="res://assets/icons/spell_button_magical_girl_a.png" id="6_a"]
+[ext_resource type="Texture2D" path="res://assets/icons/spell_button_magical_girl_b.png" id="7_b"]
+[ext_resource type="Texture2D" path="res://assets/icons/spell_button_magical_girl_c.png" id="8_c"]
+[ext_resource type="Texture2D" path="res://assets/player/Д13Magiclist.png" id="9_sprite"]
+[ext_resource type="Texture2D" path="res://assets/icons/charge.png" id="9_charge"]
+[ext_resource type="Resource" path="res://src/data/cards/atk_magical_blast.tres" id="10_card"]
+[ext_resource type="Resource" path="res://src/data/cards/atk_magical_rain.tres" id="11_card"]
+[ext_resource type="Resource" path="res://src/data/cards/def_magical_shield.tres" id="12_card"]
+[ext_resource type="Resource" path="res://src/data/cards/def_magical_barrier.tres" id="13_card"]
+[ext_resource type="Resource" path="res://src/data/cards/evt_concentration.tres" id="14_card"]
+[ext_resource type="Resource" path="res://src/data/cards/status_magical_charge.tres" id="15_card"]
+
+[sub_resource type="Resource" id="Balance"]
+script = ExtResource("3_balance")
+damage_multiplier = 1.0
+block_multiplier = 1.0
+incoming_damage_multiplier = 1.0
+max_hp_bonus = 0
+energy_bonus = 0
+balance_notes = "Magical Girl должна разгоняться через Charge, поэтому базовые множители оставлены нейтральными."
+
+[sub_resource type="Resource" id="Passive_energy"]
+script = ExtResource("4_passive")
+id = &"energy_flow"
+display_name = "Поток магии"
+description = "Увеличивает количество энергии в начале хода."
+max_level = 3
+starting_level = 1
+effect_type = 3
+value_per_level = 1.0
+
+[sub_resource type="Resource" id="Passive_resist"]
+script = ExtResource("4_passive")
+id = &"astral_barrier"
+display_name = "Астральный барьер"
+description = "Снижает получаемый магический урон."
+max_level = 3
+starting_level = 1
+effect_type = 6
+value_per_level = 0.07
+
+[sub_resource type="Resource" id="Ability_attack"]
+script = ExtResource("2_ability")
+id = &"fireblast"
+display_name = "Fireblast"
+description = "Урон всем противникам и Горение на 2 хода. Перезарядка: 3 хода."
+icon = ExtResource("6_a")
+cooldown = 3
+target_type = 2
+damage = 5
+damage_type = 1
+effects = Array[Dictionary]([{
+"all_enemies": true,
+"damage": 3,
+"duration": 2,
+"id": "apply_on_fire"
+}])
+
+[sub_resource type="Resource" id="Ability_defense"]
+script = ExtResource("2_ability")
+id = &"magic_shield"
+display_name = "Волшебный щит"
+description = "Повышает уровень щита до III. Улучшенная версия сразу даёт III уровень с двумя зарядами."
+icon = ExtResource("7_b")
+target_type = 1
+
+[sub_resource type="Resource" id="Ability_utility"]
+script = ExtResource("2_ability")
+id = &"magical_utility"
+display_name = "Усиление"
+description = "Выбор одного из трёх временных усилений билда. Не завершает ход."
+icon = ExtResource("8_c")
+consumes_turn = false
+target_type = 1
+
+[resource]
+script = ExtResource("1_build")
+id = &"magical_girl"
+display_name = "Девочка-волшебница"
+description = "Билд накопления Magical Charge. Заряд усиливает атаки и блок, а сильные эффекты требуют выбора между накоплением и расходованием ресурса."
+icon = ExtResource("5_icon")
+player_sprite_sheet = ExtResource("9_sprite")
+player_hframes = 5
+player_vframes = 12
+idle_frames = PackedInt32Array(0, 1, 2, 3, 4)
+idle_fps = 5.0
+sprite_offset = Vector2(-2, -68)
+sprite_scale = Vector2(2, 2)
+balance = SubResource("Balance")
+resource_id = &"magical_charge"
+resource_display_name = "Магический заряд"
+resource_icon = ExtResource("9_charge")
+resource_start = 0
+resource_max = 12
+activation_card_id = "con_magical_girl"
+starting_cards = Array[Resource]([ExtResource("10_card"), ExtResource("11_card"), ExtResource("12_card"), ExtResource("13_card"), ExtResource("15_card")])
+exclusive_cards = Array[Resource]([ExtResource("10_card"), ExtResource("11_card"), ExtResource("12_card"), ExtResource("13_card"), ExtResource("14_card"), ExtResource("15_card")])
+abilities = Array[ExtResource("2_ability")]([SubResource("Ability_attack"), SubResource("Ability_defense"), SubResource("Ability_utility")])
+passives = Array[ExtResource("4_passive")]([SubResource("Passive_energy"), SubResource("Passive_resist")])

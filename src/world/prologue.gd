@@ -20,6 +20,7 @@ func _connect_enemies() -> void:
 
 func _on_player_detected(enemy_group: EnemyGroup) -> void:
 	GameState.current_enemies = enemy_group.enemies.duplicate()
+	GameState.battle_return_scene_path = scene_file_path
 	call_deferred("_change_to_battle")
 
 func _change_to_battle() -> void:

@@ -7,142 +7,118 @@ var max_levels: Dictionary = {
 }
 
 func apply(buff_id: String, duration: int = 1, level: int = 0) -> void:
-	var real_id := _get_base_id(buff_id)
-	var explicit_level := _get_level_from_id(buff_id)
-
+	var real_id: String = _get_base_id(buff_id)
+	var explicit_level: int = _get_level_from_id(buff_id)
 	if explicit_level > 0:
 		level = explicit_level
 
 	if active.has(real_id):
 		var data: Dictionary = active[real_id]
+		var old_level: int = int(data.get("level", 1))
+		var new_level: int
 
 		if level > 0:
-			data["level"] = min(
-				level,
-				max_levels.get(real_id, level)
-			)
+			new_level = mini(level, int(max_levels.get(real_id, level)))
 		else:
-			data["level"] = min(
-				int(data["level"]) + 1,
-				max_levels.get(real_id, int(data["level"]) + 1)
-			)
+			new_level = mini(old_level + 1, int(max_levels.get(real_id, old_level + 1)))
 
-		data["duration"] = max(int(data["duration"]), duration)
+		data["level"] = maxi(old_level, new_level)
+		data["duration"] = maxi(int(data.get("duration", 0)), duration)
 
-		if real_id == "shield":
-			data["charges"] = 2
+		if real_id == "shield" and int(data["level"]) >= 3 and int(data.get("charges", 0)) <= 0:
+			data["charges"] = 1
 
 		active[real_id] = data
 		return
 
-	var new_level := level
-
-	if new_level <= 0:
-		new_level = 1
-
-	new_level = min(
-		new_level,
-		max_levels.get(real_id, new_level)
-	)
+	var new_level: int = level if level > 0 else 1
+	new_level = mini(new_level, int(max_levels.get(real_id, new_level)))
 
 	active[real_id] = {
 		"level": new_level,
 		"duration": duration,
-		"charges": 2 if real_id == "shield" else 0
+		"charges": 1 if real_id == "shield" and new_level >= 3 else 0
 	}
 
-
 func process_damage(amount: int) -> int:
-	var result := amount
+	var result: int = maxi(amount, 0)
+	if result <= 0 or not active.has("shield"):
+		return result
 
-	if result <= 0:
+	var shield: Dictionary = active["shield"]
+	var level: int = int(shield.get("level", 1))
+	var charges: int = int(shield.get("charges", 0))
+
+	# III уровень полностью блокирует ограниченное число атак.
+	if level >= 3 and charges > 0:
+		shield["charges"] = charges - 1
+		active["shield"] = shield
 		return 0
 
-	for buff_id in active.keys():
-		var data: Dictionary = active[buff_id]
-
-		match buff_id:
-			"shield":
-				if int(data["charges"]) > 0:
-					data["charges"] = int(data["charges"]) - 1
-					active[buff_id] = data
-					result = 0
-
-		if result <= 0:
-			break
+	# I+ уровень снижает входящий урон на 20%.
+	if level >= 1:
+		result = maxi(0, ceili(float(result) * 0.8))
 
 	return result
 
+func blocks_debuff() -> bool:
+	return get_level("shield") >= 2
+
+func set_charges(buff_id: String, amount: int) -> void:
+	var real_id: String = _get_base_id(buff_id)
+	if not active.has(real_id):
+		return
+	var data: Dictionary = active[real_id]
+	data["charges"] = maxi(amount, 0)
+	active[real_id] = data
 
 func tick() -> void:
 	var expired: Array[String] = []
-
 	for buff_id in active.keys():
 		var data: Dictionary = active[buff_id]
-		data["duration"] = int(data["duration"]) - 1
-
+		data["duration"] = int(data.get("duration", 1)) - 1
 		if int(data["duration"]) <= 0:
-			expired.append(buff_id)
+			expired.append(str(buff_id))
 		else:
 			active[buff_id] = data
 
 	for buff_id in expired:
 		active.erase(buff_id)
 
-
 func has(buff_id: String) -> bool:
 	return active.has(_get_base_id(buff_id))
 
-
 func get_level(buff_id: String) -> int:
-	var real_id := _get_base_id(buff_id)
-
+	var real_id: String = _get_base_id(buff_id)
 	if active.has(real_id):
-		return int(active[real_id]["level"])
-
+		return int(active[real_id].get("level", 1))
 	return 0
-
 
 func get_duration(buff_id: String) -> int:
-	var real_id := _get_base_id(buff_id)
-
+	var real_id: String = _get_base_id(buff_id)
 	if active.has(real_id):
-		return int(active[real_id]["duration"])
-
+		return int(active[real_id].get("duration", 0))
 	return 0
-
 
 func get_charges(buff_id: String) -> int:
-	var real_id := _get_base_id(buff_id)
-
+	var real_id: String = _get_base_id(buff_id)
 	if active.has(real_id):
-		return int(active[real_id]["charges"])
-
+		return int(active[real_id].get("charges", 0))
 	return 0
-
 
 func remove(buff_id: String) -> void:
 	active.erase(_get_base_id(buff_id))
 
-
 func clear() -> void:
 	active.clear()
-
 
 func _get_base_id(buff_id: String) -> String:
 	if buff_id.begins_with("shield_lvl_"):
 		return "shield"
-
 	return buff_id
-
 
 func _get_level_from_id(buff_id: String) -> int:
 	if not buff_id.begins_with("shield_lvl_"):
 		return 0
-
-	var value := buff_id.trim_prefix("shield_lvl_")
-
-	if value.is_valid_int():
-		return int(value)
-
-	return 0
+	var value: String = buff_id.trim_prefix("shield_lvl_")
+	return int(value) if value.is_valid_int() else 0

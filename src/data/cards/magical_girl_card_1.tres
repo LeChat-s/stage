@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://i6olbpy0tq8w"]
+
+[ext_resource type="Script" uid="uid://c602y2ab5ly3b" path="res://src/data/cards/cards_data.gd" id="1_mfwap"]
+
+[resource]
+script = ExtResource("1_mfwap")
+id = "magical_girl_card_1"
+name = "Новая карта: Девочка-волшебница"
+type = "skill"
+description = "Описание карты"

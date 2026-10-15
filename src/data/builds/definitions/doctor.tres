@@ -1,0 +1,122 @@
+[gd_resource type="Resource" script_class="ContaminationData" load_steps=19 format=3]
+
+[ext_resource type="Script" path="res://src/data/builds/contamination_data.gd" id="1_build"]
+[ext_resource type="Script" path="res://src/data/builds/ability_data.gd" id="2_ability"]
+[ext_resource type="Script" path="res://src/data/builds/build_balance_data.gd" id="3_balance"]
+[ext_resource type="Script" path="res://src/data/builds/passive_data.gd" id="4_passive"]
+[ext_resource type="Texture2D" path="res://assets/icons/class_doctor.png" id="5_icon"]
+[ext_resource type="Texture2D" path="res://assets/icons/spell_button_doctor.png" id="6_spell"]
+[ext_resource type="Texture2D" path="res://assets/player/Д13list.png" id="7_sprite"]
+[ext_resource type="Resource" path="res://src/data/cards/atk_doctor_incision.tres" id="10_card"]
+[ext_resource type="Resource" path="res://src/data/cards/atk_doctor_cloud.tres" id="11_card"]
+[ext_resource type="Resource" path="res://src/data/cards/skill_doctor_culture.tres" id="12_card"]
+[ext_resource type="Resource" path="res://src/data/cards/def_doctor_mask.tres" id="13_card"]
+[ext_resource type="Resource" path="res://src/data/cards/atk_doctor_autopsy.tres" id="14_card"]
+
+[sub_resource type="Resource" id="Balance"]
+script = ExtResource("3_balance")
+damage_multiplier = 0.95
+block_multiplier = 0.95
+incoming_damage_multiplier = 1.0
+max_hp_bonus = 5
+energy_bonus = 0
+balance_notes = "Доктор слабее в мгновенном уроне, но компенсирует это Ядом и детонацией стаков."
+
+[sub_resource type="Resource" id="Passive_toxicology"]
+script = ExtResource("4_passive")
+id = &"toxicology"
+display_name = "Токсикология"
+description = "Повышает весь исходящий урон, включая урон Яда, на 5% за уровень."
+max_level = 3
+starting_level = 0
+effect_type = 1
+value_per_level = 0.05
+
+[sub_resource type="Resource" id="Passive_mask"]
+script = ExtResource("4_passive")
+id = &"sealed_mask"
+display_name = "Герметичная маска"
+description = "Снижает любой входящий урон на 4% за уровень."
+max_level = 3
+starting_level = 0
+effect_type = 4
+value_per_level = 0.04
+
+[sub_resource type="Resource" id="Ability_attack"]
+script = ExtResource("2_ability")
+id = &"deadly_cloud"
+display_name = "Смертельное облако"
+description = "Накладывает 2 Яда на всех врагов на 3 хода и получает Вирулентность за заражённые цели."
+icon = ExtResource("6_spell")
+cooldown = 3
+target_type = 2
+effects = Array[Dictionary]([{
+"all_enemies": true,
+"damage_per_stack": 1,
+"damage_type": 0,
+"duration": 3,
+"id": "apply_status",
+"max_stacks": 10,
+"stacks": 2,
+"status": "poison"
+}, {
+"amount": 1,
+"id": "gain_resource_per_statused_enemy",
+"status": "poison"
+}])
+
+[sub_resource type="Resource" id="Ability_defense"]
+script = ExtResource("2_ability")
+id = &"field_antidote"
+display_name = "Полевой антидот"
+description = "Даёт 8 блока и очищает негативные эффекты."
+icon = ExtResource("6_spell")
+cooldown = 2
+target_type = 1
+block = 8
+effects = Array[Dictionary]([{
+"id": "clean_debuffs"
+}])
+
+[sub_resource type="Resource" id="Ability_utility"]
+script = ExtResource("2_ability")
+id = &"catalyst"
+display_name = "Катализатор"
+description = "Тратит 3 Вирулентности и немедленно активирует Яд на всех врагах. Не завершает ход."
+icon = ExtResource("6_spell")
+resource_cost = 3
+cooldown = 1
+consumes_turn = false
+target_type = 2
+effects = Array[Dictionary]([{
+"all_enemies": true,
+"id": "trigger_status",
+"status": "poison"
+}])
+
+[resource]
+script = ExtResource("1_build")
+id = &"doctor"
+display_name = "Чумной Доктор"
+description = "DoT-билд: заражает врагов Ядом, накапливает Вирулентность и превращает накопленные стаки в всплески урона."
+icon = ExtResource("5_icon")
+player_sprite_sheet = ExtResource("7_sprite")
+player_hframes = 10
+player_vframes = 24
+idle_frames = PackedInt32Array(40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51)
+idle_fps = 10.0
+attack_frames = PackedInt32Array(52, 53, 54, 55, 56, 57, 58, 59)
+attack_fps = 10.0
+sprite_offset = Vector2(0, -65)
+sprite_scale = Vector2(2, 2)
+balance = SubResource("Balance")
+resource_id = &"virulence"
+resource_display_name = "Вирулентность"
+resource_icon = ExtResource("5_icon")
+resource_start = 0
+resource_max = 10
+activation_card_id = "con_doctor"
+starting_cards = Array[Resource]([ExtResource("10_card"), ExtResource("11_card"), ExtResource("12_card"), ExtResource("13_card"), ExtResource("14_card")])
+exclusive_cards = Array[Resource]([ExtResource("10_card"), ExtResource("11_card"), ExtResource("12_card"), ExtResource("13_card"), ExtResource("14_card")])
+abilities = Array[ExtResource("2_ability")]([SubResource("Ability_attack"), SubResource("Ability_defense"), SubResource("Ability_utility")])
+passives = Array[ExtResource("4_passive")]([SubResource("Passive_toxicology"), SubResource("Passive_mask")])

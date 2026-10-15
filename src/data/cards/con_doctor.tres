@@ -1,14 +1,16 @@
-[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://d2u8vfl4qjoft"]
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
 
-[ext_resource type="Texture2D" uid="uid://bs163lul3cds4" path="res://assets/card/contamination_base.png" id="1_fdjh1"]
-[ext_resource type="Script" uid="uid://c602y2ab5ly3b" path="res://src/data/cards/cards_data.gd" id="1_quotn"]
+[ext_resource type="Texture2D" path="res://assets/card/contamination_base.png" id="1_art"]
+[ext_resource type="Script" path="res://src/data/cards/cards_data.gd" id="2_card"]
 
 [resource]
-script = ExtResource("1_quotn")
+script = ExtResource("2_card")
 id = "con_doctor"
 name = "Заражение: Чумной Доктор"
 cost = 3
 type = "infection"
+build_id = &"doctor"
 target_type = 1
-artwork = ExtResource("1_fdjh1")
-metadata/_custom_type_script = "uid://c602y2ab5ly3b"
+description = "Принимает форму Чумного Доктора. Билд строится вокруг Яда, Вирулентности и отложенного урона."
+effect_type = "buff"
+artwork = ExtResource("1_art")

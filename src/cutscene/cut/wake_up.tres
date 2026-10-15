@@ -19,7 +19,7 @@ resource_name = "Анимация 2"
 script = ExtResource("3_nsg4v")
 target_id = &"player"
 animation = &"wake_up"
-start_time = 0.5
+start_time = 0.30000000000000004
 duration = 1.7000000000000002
 metadata/_custom_type_script = "uid://bl8svj60padfd"
 

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/card/defend_base.png" id="1_art"]
+[ext_resource type="Script" path="res://src/data/cards/cards_data.gd" id="2_card"]
+
+[resource]
+script = ExtResource("2_card")
+id = "def_doctor_mask"
+name = "Фильтрующая маска"
+shild = 6
+cost = 1
+type = "defense"
+build_id = &"doctor"
+target_type = 1
+effects = Array[Dictionary]([{
+"id": "clean_debuffs"
+}])
+description = "Даёт 6 блока и очищает негативные эффекты."
+artwork = ExtResource("1_art")

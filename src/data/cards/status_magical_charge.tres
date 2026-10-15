@@ -6,9 +6,15 @@
 [resource]
 script = ExtResource("1_yhexm")
 id = "status_magical_charge"
-name = "Волшебный Заряд"
+name = "Волшебный заряд"
+cost = 0
 type = "status_effect"
-effects = Array[Dictionary]([{}])
-description = "Тратит всю оставшуюся энергию X. Переводит ее в заряды в двойном размере."
+build_id = &"magical_girl"
+target_type = 1
+effects = Array[Dictionary]([{
+"id": "spend_all_energy_for_charge",
+"multiplier": 2
+}])
+description = "Тратит всю оставшуюся энергию и получает вдвое больше Магического заряда."
 artwork = ExtResource("1_bnk3b")
 metadata/_custom_type_script = "uid://c602y2ab5ly3b"

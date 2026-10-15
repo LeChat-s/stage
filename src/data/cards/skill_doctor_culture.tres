@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/card/event_base.png" id="1_art"]
+[ext_resource type="Script" path="res://src/data/cards/cards_data.gd" id="2_card"]
+
+[resource]
+script = ExtResource("2_card")
+id = "skill_doctor_culture"
+name = "Посев культуры"
+cost = 1
+type = "skill"
+build_id = &"doctor"
+target_type = 0
+effects = Array[Dictionary]([{
+"damage_per_stack": 1,
+"damage_type": 0,
+"duration": 2,
+"id": "apply_status",
+"max_stacks": 10,
+"stacks": 1,
+"status": "poison"
+}, {
+"id": "extend_status",
+"status": "poison",
+"turns": 2
+}, {
+"amount": 1,
+"id": "gain_build_resource"
+}])
+description = "Добавляет 1 Яд, продлевает Яд на 2 хода и даёт 1 Вирулентность."
+artwork = ExtResource("1_art")

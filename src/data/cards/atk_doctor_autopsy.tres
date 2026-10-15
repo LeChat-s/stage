@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/card/event_trick.png" id="1_art"]
+[ext_resource type="Script" path="res://src/data/cards/cards_data.gd" id="2_card"]
+
+[resource]
+script = ExtResource("2_card")
+id = "atk_doctor_autopsy"
+name = "Вскрытие"
+dmg = 3
+damage_type = 0
+cost = 2
+type = "attack"
+build_id = &"doctor"
+target_type = 0
+effects = Array[Dictionary]([{
+"consume": true,
+"damage_per_stack": 3,
+"damage_type": 0,
+"id": "damage_per_status_stack",
+"source": "autopsy",
+"status": "poison"
+}])
+description = "Наносит 3 урона, затем ещё 3 урона за каждый стак Яда и снимает весь Яд."
+effect_type = "attack_battle"
+artwork = ExtResource("1_art")
