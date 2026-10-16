@@ -13,6 +13,7 @@ signal died
 @onready var hp_text: Label = $HPBar/HPText
 @onready var catch_up_bar: ProgressBar = $CatchUpBar
 @onready var effects_ui: EffectContainer = $HPBar/Status
+@onready var combat_status_ui: CombatStatusContainer = $HPBar/CombatStatus
 @onready var main_sprite: Sprite2D = $Sprite2D
 @onready var magical_girl_sprite: Sprite2D = $MagicalGirlSprite
 
@@ -203,6 +204,7 @@ func _apply_build_max_hp_bonus() -> void:
 func take_damage(amount: int, type: GameStateClass.DamageType = GameStateClass.DamageType.PHYSICAL) -> void:
 	var processed_damage: int = GameState.calculate_incoming_damage(amount, int(type))
 	processed_damage = buffs.process_damage(processed_damage)
+	_refresh_combat_status_ui()
 
 	if damage_popup_scene:
 		var popup = damage_popup_scene.instantiate()
@@ -245,6 +247,7 @@ func add_energy(value: int) -> void:
 
 func reset_turn() -> void:
 	buffs.tick()
+	_refresh_combat_status_ui()
 	block = 0
 	energy = max_energy + GameState.get_bonus_energy()
 	emit_signals()
@@ -260,6 +263,7 @@ func tick_end_turn_statuses() -> void:
 			debuffs[debuff_id] = data
 	for debuff_id in expired:
 		debuffs.erase(debuff_id)
+	_refresh_combat_status_ui()
 
 func apply_debuff(debuff_id: String, duration: int, amount: int = 1) -> void:
 	if buffs.blocks_debuff():
@@ -270,9 +274,11 @@ func apply_debuff(debuff_id: String, duration: int, amount: int = 1) -> void:
 	data["duration"] = maxi(int(data.get("duration", 0)), duration)
 	data["amount"] = maxi(int(data.get("amount", 0)), amount)
 	debuffs[debuff_id] = data
+	_refresh_combat_status_ui()
 
 func clear_debuffs() -> void:
 	debuffs.clear()
+	_refresh_combat_status_ui()
 
 func has_debuff(debuff_id: String) -> bool:
 	return debuffs.has(debuff_id)
@@ -294,6 +300,7 @@ func get_status_data(status_id: String) -> Dictionary:
 
 func remove_status(status_id: String) -> void:
 	debuffs.erase(status_id)
+	_refresh_combat_status_ui()
 
 func extend_status(status_id: String, turns: int) -> void:
 	if not debuffs.has(status_id):
@@ -310,12 +317,38 @@ func get_outgoing_damage_multiplier() -> float:
 
 func apply_buff(buff_id: String, duration: int = 1, level: int = 0) -> void:
 	buffs.apply(buff_id, duration, level)
+	_refresh_combat_status_ui()
 
 func get_buff_level(buff_id: String) -> int:
 	return buffs.get_level(buff_id)
 
 func set_buff_charges(buff_id: String, amount: int) -> void:
 	buffs.set_charges(buff_id, amount)
+	_refresh_combat_status_ui()
+
+func _refresh_combat_status_ui() -> void:
+	if combat_status_ui == null: return
+	var entries: Array[Dictionary] = []
+	var lvl: int = buffs.get_level("shield")
+	if lvl > 0:
+		var dur: int = buffs.get_duration("shield")
+		var charges: int = buffs.get_charges("shield")
+		var levels: Array[String] = ["", "I", "II", "III"]
+		var lt: String = levels[clampi(lvl, 1, 3)]
+		var charge_text: String = (" · зарядов %d" % charges) if charges > 0 else ""
+		entries.append({"id":"shield","symbol":"Щ","color":Color("#5b91bd"),"value":lt,"duration":dur,"tooltip":"Щит %s\nСнижение урона / защита от статусов%s\nОсталось ходов: %d" % [lt,charge_text,dur]})
+	for key in debuffs.keys():
+		var sid: String = str(key)
+		var data: Dictionary = debuffs[key]
+		var dur: int = int(data.get("duration", 0))
+		var amount: int = int(data.get("amount", data.get("stacks", 1)))
+		if sid == "weak":
+			entries.append({"id":sid,"symbol":"СЛ","color":Color("#9278ad"),"value":"-25%","duration":dur,"tooltip":"Слабость\nИсходящий урон -25%\nОсталось ходов: %d" % dur})
+		else:
+			entries.append({"id":sid,"symbol":sid.left(2).to_upper(),"color":Color("#9a6f78"),"value":"x%d" % amount if amount > 1 else "","duration":dur,"tooltip":"%s\nЗначение: %d\nОсталось ходов: %d" % [sid,amount,dur]})
+	combat_status_ui.sync(entries)
+
+
 
 func emit_signals() -> void:
 	hp_changed.emit(hp, max_hp)

@@ -1,46 +1,18 @@
-[gd_resource type="Resource" script_class="ContaminationData" load_steps=19 format=3]
+[gd_resource type="Resource" script_class="ContaminationData" format=3 uid="uid://bae5tp44ouwhj"]
 
-[ext_resource type="Script" path="res://src/data/builds/contamination_data.gd" id="1_build"]
-[ext_resource type="Script" path="res://src/data/builds/ability_data.gd" id="2_ability"]
-[ext_resource type="Script" path="res://src/data/builds/build_balance_data.gd" id="3_balance"]
-[ext_resource type="Script" path="res://src/data/builds/passive_data.gd" id="4_passive"]
-[ext_resource type="Texture2D" path="res://assets/icons/class_doctor.png" id="5_icon"]
-[ext_resource type="Texture2D" path="res://assets/icons/spell_button_doctor.png" id="6_spell"]
-[ext_resource type="Texture2D" path="res://assets/player/Д13list.png" id="7_sprite"]
+[ext_resource type="Script" uid="uid://ucmaekqsob6w" path="res://src/data/builds/contamination_data.gd" id="1_build"]
+[ext_resource type="Script" uid="uid://o8s1hgeg4wdq" path="res://src/data/builds/ability_data.gd" id="2_ability"]
+[ext_resource type="Script" uid="uid://b62qnnmbwvxgk" path="res://src/data/builds/build_balance_data.gd" id="3_balance"]
+[ext_resource type="Script" uid="uid://dywpkcq2cl5y6" path="res://src/data/builds/passive_data.gd" id="4_passive"]
+[ext_resource type="Texture2D" uid="uid://p84ebdwd7ylu" path="res://assets/icons/class_doctor.png" id="5_icon"]
+[ext_resource type="Texture2D" uid="uid://diejhfafshraa" path="res://assets/icons/spell_button_doctor.png" id="6_spell"]
+[ext_resource type="Texture2D" uid="uid://dyjjv8w5ueony" path="res://assets/player/Д13list.png" id="7_sprite"]
+[ext_resource type="Resource" uid="uid://bncihahktu5c7" path="res://src/data/cards/doctor_card_1.tres" id="9_sl42b"]
 [ext_resource type="Resource" path="res://src/data/cards/atk_doctor_incision.tres" id="10_card"]
 [ext_resource type="Resource" path="res://src/data/cards/atk_doctor_cloud.tres" id="11_card"]
 [ext_resource type="Resource" path="res://src/data/cards/skill_doctor_culture.tres" id="12_card"]
 [ext_resource type="Resource" path="res://src/data/cards/def_doctor_mask.tres" id="13_card"]
 [ext_resource type="Resource" path="res://src/data/cards/atk_doctor_autopsy.tres" id="14_card"]
-
-[sub_resource type="Resource" id="Balance"]
-script = ExtResource("3_balance")
-damage_multiplier = 0.95
-block_multiplier = 0.95
-incoming_damage_multiplier = 1.0
-max_hp_bonus = 5
-energy_bonus = 0
-balance_notes = "Доктор слабее в мгновенном уроне, но компенсирует это Ядом и детонацией стаков."
-
-[sub_resource type="Resource" id="Passive_toxicology"]
-script = ExtResource("4_passive")
-id = &"toxicology"
-display_name = "Токсикология"
-description = "Повышает весь исходящий урон, включая урон Яда, на 5% за уровень."
-max_level = 3
-starting_level = 0
-effect_type = 1
-value_per_level = 0.05
-
-[sub_resource type="Resource" id="Passive_mask"]
-script = ExtResource("4_passive")
-id = &"sealed_mask"
-display_name = "Герметичная маска"
-description = "Снижает любой входящий урон на 4% за уровень."
-max_level = 3
-starting_level = 0
-effect_type = 4
-value_per_level = 0.04
 
 [sub_resource type="Resource" id="Ability_attack"]
 script = ExtResource("2_ability")
@@ -94,6 +66,27 @@ effects = Array[Dictionary]([{
 "status": "poison"
 }])
 
+[sub_resource type="Resource" id="Balance"]
+script = ExtResource("3_balance")
+damage_multiplier = 0.95
+block_multiplier = 0.95
+max_hp_bonus = 5
+balance_notes = "Доктор слабее в мгновенном уроне, но компенсирует это Ядом и детонацией стаков."
+
+[sub_resource type="Resource" id="Passive_toxicology"]
+script = ExtResource("4_passive")
+id = &"toxicology"
+display_name = "Токсикология"
+description = "Повышает весь исходящий урон, включая урон Яда, на 5% за уровень."
+
+[sub_resource type="Resource" id="Passive_mask"]
+script = ExtResource("4_passive")
+id = &"sealed_mask"
+display_name = "Герметичная маска"
+description = "Снижает любой входящий урон на 4% за уровень."
+effect_type = 4
+value_per_level = 0.04
+
 [resource]
 script = ExtResource("1_build")
 id = &"doctor"
@@ -107,16 +100,13 @@ idle_frames = PackedInt32Array(40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51)
 idle_fps = 10.0
 attack_frames = PackedInt32Array(52, 53, 54, 55, 56, 57, 58, 59)
 attack_fps = 10.0
-sprite_offset = Vector2(0, -65)
-sprite_scale = Vector2(2, 2)
 balance = SubResource("Balance")
 resource_id = &"virulence"
 resource_display_name = "Вирулентность"
 resource_icon = ExtResource("5_icon")
-resource_start = 0
 resource_max = 10
 activation_card_id = "con_doctor"
 starting_cards = Array[Resource]([ExtResource("10_card"), ExtResource("11_card"), ExtResource("12_card"), ExtResource("13_card"), ExtResource("14_card")])
-exclusive_cards = Array[Resource]([ExtResource("10_card"), ExtResource("11_card"), ExtResource("12_card"), ExtResource("13_card"), ExtResource("14_card")])
+exclusive_cards = Array[Resource]([ExtResource("10_card"), ExtResource("11_card"), ExtResource("12_card"), ExtResource("13_card"), ExtResource("14_card"), ExtResource("9_sl42b")])
 abilities = Array[ExtResource("2_ability")]([SubResource("Ability_attack"), SubResource("Ability_defense"), SubResource("Ability_utility")])
 passives = Array[ExtResource("4_passive")]([SubResource("Passive_toxicology"), SubResource("Passive_mask")])

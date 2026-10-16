@@ -3,6 +3,8 @@ extends Control
 
 signal card_played(card_data: CardData)
 
+@onready var card_face: CardFace = $CardFace
+
 var card_data: CardData
 var is_dragging: bool = false
 var is_hovered: bool = false
@@ -14,36 +16,39 @@ var drag_offset: Vector2 = Vector2.ZERO
 
 func setup(data: CardData) -> void:
 	card_data = data
-	if has_node("Art") and data.artwork:
-		$Art.texture = data.artwork
+	if is_node_ready():
+		card_face.set_card(data)
 	original_position = global_position
 	original_rotation = rotation_degrees
 
 func _ready() -> void:
-	if size == Vector2.ZERO:
-		size = Vector2(106, 150)
+	size = Vector2(106.0, 150.0)
+	custom_minimum_size = size
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
-	
+
+	if card_data != null:
+		card_face.set_card(card_data)
+
 	pivot_offset = size / 2.0
 	original_rotation = rotation_degrees
 
 func _process(delta: float) -> void:
 	if is_dragging:
-		var target_pos = get_global_mouse_position() - drag_offset
-		global_position = global_position.lerp(target_pos, 25 * delta)
-		
-		rotation_degrees = lerp(rotation_degrees, 0.0, 15 * delta)
-		scale = scale.lerp(Vector2.ONE, 15 * delta)
+		var target_pos: Vector2 = get_global_mouse_position() - drag_offset
+		global_position = global_position.lerp(target_pos, 25.0 * delta)
+		rotation_degrees = lerp(rotation_degrees, 0.0, 15.0 * delta)
+		scale = scale.lerp(Vector2.ONE, 15.0 * delta)
 	elif is_hovered:
-		var hovered_pos = original_position + Vector2(0, -40)
-		global_position = global_position.lerp(hovered_pos, 15 * delta)
-		rotation_degrees = lerp(rotation_degrees, 0.0, 15 * delta)
-		scale = scale.lerp(Vector2(1.25,1.25), 15 * delta)
+		var hovered_pos: Vector2 = original_position + Vector2(0.0, -40.0)
+		global_position = global_position.lerp(hovered_pos, 15.0 * delta)
+		rotation_degrees = lerp(rotation_degrees, 0.0, 15.0 * delta)
+		scale = scale.lerp(Vector2(1.25, 1.25), 15.0 * delta)
 	else:
-		global_position = global_position.lerp(original_position, 15 * delta)
-		rotation_degrees = lerp(rotation_degrees, original_rotation, 15 * delta) 
-		scale = scale.lerp(Vector2.ONE, 15 * delta)
+		global_position = global_position.lerp(original_position, 15.0 * delta)
+		rotation_degrees = lerp(rotation_degrees, original_rotation, 15.0 * delta)
+		scale = scale.lerp(Vector2.ONE, 15.0 * delta)
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -55,7 +60,7 @@ func _gui_input(event: InputEvent) -> void:
 			is_dragging = false
 			z_index = 0
 			_check_play_condition()
-	
+
 func _check_play_condition() -> void:
 	if global_position.y < play_treshhold:
 		card_played.emit(card_data)

@@ -62,39 +62,29 @@ static func calculate(build) -> Dictionary:
 			var max_level: int = int(passive.get("max_level"))
 			var value: float = float(passive.get("value_per_level")) * float(max_level)
 			match int(passive.get("effect_type")):
-				0: defense += value * 0.35 # MAX_HP_BONUS
-				1: offense *= 1.0 + value # DAMAGE_BONUS
-				2: defense *= 1.0 + value # BLOCK_BONUS
-				3: utility += value * 4.0 # ENERGY_BONUS
-				4, 5, 6, 7: defense += value * 45.0 # resistances
+				0: defense += value * 0.35
+				1: offense *= 1.0 + value
+				2: defense *= 1.0 + value
+				3: utility += value * 4.0
+				4, 5, 6, 7: defense += value * 45.0
 
 	var offense_index: float = clampf(offense / 25.0 * 100.0, 0.0, 250.0)
 	var defense_index: float = clampf(defense / 25.0 * 100.0, 0.0, 250.0)
 	var utility_index: float = clampf(utility / 18.0 * 100.0, 0.0, 250.0)
 	var power: float = offense_index * 0.45 + defense_index * 0.40 + utility_index * 0.15
-
-	return {
-		"offense": offense_index,
-		"defense": defense_index,
-		"utility": utility_index,
-		"power": power,
-		"raw_offense": offense,
-		"raw_defense": defense,
-		"raw_utility": utility
-	}
+	return {"offense": offense_index, "defense": defense_index, "utility": utility_index, "power": power, "raw_offense": offense, "raw_defense": defense, "raw_utility": utility}
 
 static func _target_factor(target_type: int) -> float:
 	match target_type:
-		2: return 1.65 # ALL_ENEMIES
-		1, 3: return 0.15 # SELF / ALL_HEROES
+		2: return 1.65
+		1, 3: return 0.15
 	return 1.0
 
 static func _defense_target_factor(target_type: int) -> float:
 	match target_type:
-		3: return 1.4 # ALL_HEROES
-		2: return 0.25 # ALL_ENEMIES
+		3: return 1.4
+		2: return 0.25
 	return 1.0
-
 
 static func _effects_offense(effects) -> float:
 	var result: float = 0.0
@@ -115,11 +105,8 @@ static func _effects_offense(effects) -> float:
 				var per_stack: float = float(effect.get("damage_per_stack", 0))
 				var factor: float = 1.6 if bool(effect.get("all_enemies", false)) else 1.0
 				result += duration * (tick_damage + stacks * per_stack) * factor
-			"damage_per_status_stack":
-				# Балансер предполагает около трёх стаков в момент payoff.
-				result += float(effect.get("damage_per_stack", 1)) * 3.0
-			"trigger_status":
-				result += 5.0 * (1.6 if bool(effect.get("all_enemies", false)) else 1.0)
+			"damage_per_status_stack": result += float(effect.get("damage_per_stack", 1)) * 3.0
+			"trigger_status": result += 5.0 * (1.6 if bool(effect.get("all_enemies", false)) else 1.0)
 	return result
 
 static func _effects_value(effects) -> float:

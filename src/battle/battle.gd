@@ -17,6 +17,10 @@ extends Node2D
 @export var spawn_positions: Array[Marker2D] = []
 @export var enemy_catalog: EnemyCatalog
 
+@export_category("Enemy Turn Queue")
+@export_range(0.05, 1.0, 0.01) var enemy_shift_duration: float = 0.22
+@export_range(0.0, 1.0, 0.01) var enemy_action_pause: float = 0.12
+
 var enemies: Array[EnemyInBattle] = []
 var deck: Array[CardData] = []
 var discard_pile: Array[CardData] = []
@@ -42,6 +46,7 @@ var block_break_charge_reward: int = 0
 var _is_battle_ending: bool = false
 var _turn_locked: bool = false
 var _starting_hand_prepared: bool = false
+var _enemy_phase_running: bool = false
 
 func _ready() -> void:
 	_setup_battle()
@@ -445,26 +450,138 @@ func _on_end_turn() -> void:
 	hand.clear_hand()
 	player.tick_end_turn_statuses()
 
-	var current_enemies: Array[EnemyInBattle] = enemies.duplicate()
-	for current_enemy in current_enemies:
+	_enemy_phase_running = true
+
+	# В pending попадают только враги, существовавшие в начале вражеской фазы.
+	# Призванные во время этой фазы занимают свободный слот, но ходят со следующего круга.
+	var pending: Array[EnemyInBattle] = _get_alive_enemy_order()
+	var acted: Array[EnemyInBattle] = []
+
+	await _move_enemy_group_to_front(pending)
+
+	while not pending.is_empty():
 		if _is_battle_ending:
+			_enemy_phase_running = false
 			return
+
+		var current_enemy: EnemyInBattle = pending[0]
 		if not is_instance_valid(current_enemy) or current_enemy.hp <= 0:
+			pending.pop_front()
+			await _move_enemy_group_to_front(_make_visual_turn_order(pending, acted))
 			continue
 
+		current_enemy.set_turn_active(true)
+
 		await current_enemy.process_turn_start_statuses()
-		if _is_battle_ending or not is_instance_valid(current_enemy) or current_enemy.hp <= 0:
+		if _is_battle_ending:
+			_enemy_phase_running = false
+			return
+
+		# DoT может убить врага до его действия.
+		if not is_instance_valid(current_enemy) or current_enemy.hp <= 0:
+			if is_instance_valid(current_enemy):
+				current_enemy.set_turn_active(false)
+			pending.pop_front()
+			await _move_enemy_group_to_front(_make_visual_turn_order(pending, acted))
 			continue
 
 		var action: String = current_enemy.get_next_action()
 		current_enemy.execute_action(action, player)
 		current_enemy.tick_statuses_end_turn()
 
-		if player.hp <= 0:
+		if enemy_action_pause > 0.0 and not _is_battle_ending:
+			await get_tree().create_timer(enemy_action_pause).timeout
+
+		if is_instance_valid(current_enemy):
+			current_enemy.set_turn_active(false)
+
+		if player.hp <= 0 or _is_battle_ending:
+			_enemy_phase_running = false
 			return
+
+		# Отходивший враг отправляется в конец визуальной очереди.
+		pending.pop_front()
+		acted.append(current_enemy)
+		await _move_enemy_group_to_front(_make_visual_turn_order(pending, acted))
+
+	_enemy_phase_running = false
+	await _normalize_enemy_slots()
 
 	if not _is_battle_ending and player.hp > 0:
 		_start_player_turn()
+
+
+func _make_visual_turn_order(
+	pending: Array[EnemyInBattle],
+	acted: Array[EnemyInBattle]
+) -> Array[EnemyInBattle]:
+	var result: Array[EnemyInBattle] = []
+	for enemy in pending:
+		if is_instance_valid(enemy) and enemy.hp > 0:
+			result.append(enemy)
+	for enemy in acted:
+		if is_instance_valid(enemy) and enemy.hp > 0:
+			result.append(enemy)
+	return result
+
+
+func _get_alive_enemy_order() -> Array[EnemyInBattle]:
+	var result: Array[EnemyInBattle] = []
+
+	for marker_index in range(spawn_positions.size()):
+		for enemy in enemies:
+			if not is_instance_valid(enemy) or enemy.hp <= 0 or result.has(enemy):
+				continue
+			if (
+				enemy.has_meta("spawn_marker_index")
+				and int(enemy.get_meta("spawn_marker_index")) == marker_index
+			):
+				result.append(enemy)
+
+	for enemy in enemies:
+		if is_instance_valid(enemy) and enemy.hp > 0 and not result.has(enemy):
+			result.append(enemy)
+
+	return result
+
+
+func _move_enemy_group_to_front(order: Array[EnemyInBattle]) -> void:
+	if order.is_empty() or spawn_positions.is_empty():
+		return
+
+	var tween: Tween = create_tween()
+	tween.set_parallel(true)
+	var has_motion: bool = false
+
+	var count: int = mini(order.size(), spawn_positions.size())
+	for i in range(count):
+		var enemy: EnemyInBattle = order[i]
+		if not is_instance_valid(enemy) or enemy.hp <= 0:
+			continue
+
+		var target_position: Vector2 = spawn_positions[i].global_position
+		enemy.set_meta("spawn_marker_index", i)
+
+		if enemy.global_position.distance_to(target_position) <= 0.5:
+			continue
+
+		has_motion = true
+		tween.tween_property(
+			enemy,
+			"global_position",
+			target_position,
+			enemy_shift_duration
+		).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+
+	if has_motion:
+		await tween.finished
+	else:
+		tween.kill()
+
+
+func _normalize_enemy_slots() -> void:
+	var alive_order: Array[EnemyInBattle] = _get_alive_enemy_order()
+	await _move_enemy_group_to_front(alive_order)
 
 func _on_player_died() -> void:
 	if _is_battle_ending:
@@ -481,6 +598,10 @@ func _on_enemy_died(dead_enemy: EnemyInBattle) -> void:
 		selected_enemy_target = _get_first_alive_enemy()
 	if current_target == dead_enemy:
 		current_target = null
+
+	if not _enemy_phase_running:
+		call_deferred("_normalize_enemy_slots")
+
 	call_deferred("_check_victory")
 
 func _get_first_alive_enemy() -> EnemyInBattle:

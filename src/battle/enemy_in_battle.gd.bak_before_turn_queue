@@ -1,0 +1,379 @@
+class_name EnemyInBattle
+extends Node2D
+
+signal hp_changed(curent: int, max_hp: int)
+signal block_changed(amount: int)
+signal intent_changed(text: String)
+signal died
+
+@onready var attack_effect: AnimatedSprite2D = $AnimatedSprite2D
+@onready var hp_bar: ProgressBar = $HPBar
+@onready var block_text: Label = $HPBar/Block
+@onready var intent_text: Label = $Intent
+@onready var hp_text: Label = $HPBar/HPText
+@onready var enemy_sprite: Sprite2D = $EnemySprite
+
+var hp: int
+var max_hp: int
+var two_phase_hp: int
+var phase: int
+var block: int = 0
+var actions: Array[String] = []
+var action_index: int = 0
+var damage_popup_scene: PackedScene = preload("res://src/ui/dmg_popups.tscn")
+var current_enemy_data: EnemyData
+var buffs: Dictionary = {}
+var debuffs: Dictionary = {}
+
+func _ready() -> void:
+	var click_zone: Area2D = $Area2D
+	if click_zone:
+		click_zone.input_event.connect(_on_click_zone_input_event)
+
+func setup(enemy_data: EnemyData) -> void:
+	current_enemy_data = enemy_data
+	max_hp = enemy_data.max_hp
+	hp = max_hp
+	two_phase_hp = enemy_data.two_phase_hp
+	phase = enemy_data.phase
+	actions = enemy_data.actions.duplicate()
+	action_index = 0
+	block = 0
+	buffs.clear()
+	debuffs.clear()
+
+	if enemy_sprite and enemy_data.sprite:
+		enemy_sprite.texture = enemy_data.sprite
+		enemy_sprite.visible = true
+	else:
+		push_warning("EnemyInBattle: у EnemyData отсутствует sprite.")
+
+	emit_signals()
+	show_intent()
+
+func resetup(enemy_data: EnemyData) -> void:
+	max_hp = enemy_data.two_phase_hp
+	hp = max_hp
+	phase = 0
+	actions = enemy_data.two_phase_actions.duplicate()
+	action_index = 0
+	block = 0
+
+	if enemy_sprite and enemy_data.two_phase_sprite:
+		enemy_sprite.texture = enemy_data.two_phase_sprite
+		enemy_sprite.visible = true
+
+	emit_signals()
+	show_intent()
+
+func _on_click_zone_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		var battle_scene := get_tree().current_scene as Battle
+		if battle_scene:
+			battle_scene.select_new_target(self)
+
+func take_damage(
+	amount: int,
+	effect_name: String = "default_attack",
+	type: GameStateClass.DamageType = GameStateClass.DamageType.PHYSICAL
+) -> void:
+	if hp <= 0:
+		return
+
+	var final_amount: int = maxi(amount, 0)
+	if damage_popup_scene:
+		var popup = damage_popup_scene.instantiate()
+		var ui_node := get_tree().current_scene.get_node_or_null("UI")
+		var screen_position: Vector2 = $AnimatedSprite2D.get_global_transform_with_canvas().origin
+		if ui_node:
+			ui_node.add_child(popup)
+		else:
+			get_tree().current_scene.add_child(popup)
+		popup.start_with_type(final_amount, screen_position, int(type))
+
+	var remaining: int = final_amount
+	if block > 0:
+		var absorbed: int = mini(block, remaining)
+		block -= absorbed
+		remaining -= absorbed
+
+	if attack_effect.sprite_frames.has_animation(effect_name):
+		attack_effect.visible = true
+		attack_effect.play(effect_name)
+		await attack_effect.animation_finished
+		attack_effect.visible = false
+
+	hp = maxi(0, hp - remaining)
+	emit_signals()
+
+	if hp > 0:
+		return
+
+	# Переход во вторую фазу не считается смертью для Battle.
+	if phase > 0:
+		resetup(current_enemy_data)
+		print("EnemyInBattle: началась вторая фаза.")
+		return
+
+	enemy_sprite.visible = false
+	if attack_effect.sprite_frames.has_animation("mushroom_die"):
+		attack_effect.visible = true
+		attack_effect.play("mushroom_die")
+		await attack_effect.animation_finished
+
+	died.emit()
+	queue_free()
+
+func add_block(amount: int) -> void:
+	block += maxi(amount, 0)
+	emit_signals()
+
+func get_next_action() -> String:
+	if actions.is_empty():
+		return "attack:5"
+	var action: String = actions[action_index % actions.size()]
+	action_index += 1
+	return action
+
+func process_turn_start_statuses() -> void:
+	if hp <= 0:
+		return
+	var status_ids: Array = debuffs.keys()
+	for status_id in status_ids:
+		if hp <= 0:
+			return
+		await trigger_status(str(status_id))
+
+func execute_action(action: String, target: PlayerInBattle) -> void:
+	if hp <= 0 or action.is_empty():
+		return
+
+	block = 0
+	var parts: PackedStringArray = action.split(":", false, 1)
+	if parts.size() < 2:
+		push_warning("EnemyInBattle: неверный формат действия '%s'." % action)
+		return
+
+	var raw_action_type: String = parts[0].strip_edges()
+	var value: int = int(parts[1])
+	var battle_scene := get_tree().current_scene as Battle
+	var action_type: String = raw_action_type
+	var current_damage_type: GameStateClass.DamageType = GameStateClass.DamageType.PHYSICAL
+
+	if " " in raw_action_type:
+		var sub_parts: PackedStringArray = raw_action_type.split(" ", false)
+		action_type = sub_parts[0]
+		if sub_parts.size() > 1:
+			match sub_parts[1]:
+				"-m": current_damage_type = GameStateClass.DamageType.MAGIC
+				"-p": current_damage_type = GameStateClass.DamageType.PSYCHIC
+				_: current_damage_type = GameStateClass.DamageType.PHYSICAL
+
+	match action_type:
+		"attack":
+			var final_damage: int = value + _get_buff_value("rage")
+			target.take_damage(final_damage, current_damage_type)
+
+		"defend":
+			add_block(value)
+
+		"summon":
+			if battle_scene:
+				battle_scene.summon_minion(value)
+
+		"debuff":
+			target.apply_debuff("weak", value)
+
+		"self_buff":
+			_apply_timed_buff("rage", value, 2)
+
+		"buff_minions":
+			if battle_scene:
+				for enemy in battle_scene.enemies:
+					if is_instance_valid(enemy) and enemy != self and enemy.hp > 0:
+						enemy.add_block(value)
+
+		_:
+			push_warning("EnemyInBattle: неизвестное действие '%s'." % action_type)
+
+	show_intent()
+
+func apply_status(
+	status_id: String,
+	duration: int,
+	stacks: int = 1,
+	tick_damage: int = 0,
+	damage_per_stack: int = 0,
+	damage_type: int = 0,
+	max_stacks: int = 99
+) -> void:
+	if status_id.is_empty():
+		return
+	var data: Dictionary = debuffs.get(status_id, {})
+	var old_stacks: int = int(data.get("stacks", 0))
+	data["duration"] = maxi(int(data.get("duration", 0)), duration)
+	data["stacks"] = clampi(old_stacks + maxi(stacks, 0), 0, maxi(max_stacks, 0))
+	data["tick_damage"] = maxi(int(data.get("tick_damage", 0)), tick_damage)
+	data["damage_per_stack"] = maxi(int(data.get("damage_per_stack", 0)), damage_per_stack)
+	data["damage_type"] = damage_type
+	debuffs[status_id] = data
+	show_intent()
+
+func apply_debuff(debuff_name: String, duration: int, amount: int = 0) -> void:
+	if debuff_name == "on_fire":
+		apply_status(debuff_name, duration, 1, maxi(amount, 3), 0, GameStateClass.DamageType.MAGIC, 1)
+	else:
+		apply_status(debuff_name, duration, maxi(amount, 1))
+
+func get_status_data(status_id: String) -> Dictionary:
+	if not debuffs.has(status_id):
+		return {}
+	var data: Dictionary = debuffs[status_id]
+	return data.duplicate(true)
+
+func get_status_stacks(status_id: String) -> int:
+	if not debuffs.has(status_id):
+		return 0
+	var data: Dictionary = debuffs[status_id]
+	return int(data.get("stacks", data.get("amount", 1)))
+
+func has_status(status_id: String) -> bool:
+	return debuffs.has(status_id)
+
+func remove_status(status_id: String) -> void:
+	debuffs.erase(status_id)
+	show_intent()
+
+func extend_status(status_id: String, turns: int) -> void:
+	if not debuffs.has(status_id):
+		return
+	var data: Dictionary = debuffs[status_id]
+	data["duration"] = maxi(0, int(data.get("duration", 0)) + turns)
+	debuffs[status_id] = data
+	show_intent()
+
+func trigger_status(status_id: String) -> int:
+	if not debuffs.has(status_id) or hp <= 0:
+		return 0
+	var data: Dictionary = debuffs[status_id]
+	var stacks: int = int(data.get("stacks", 1))
+	var damage: int = int(data.get("tick_damage", 0)) + int(data.get("damage_per_stack", 0)) * stacks
+	if damage <= 0:
+		return 0
+	var damage_type: int = int(data.get("damage_type", GameStateClass.DamageType.PHYSICAL))
+	await take_damage(damage, status_id, damage_type)
+	return damage
+
+func tick_statuses_end_turn() -> void:
+	_tick_dictionary(buffs)
+	_tick_dictionary(debuffs)
+	show_intent()
+
+func _apply_timed_buff(buff_name: String, value: int, duration: int) -> void:
+	var data: Dictionary = buffs.get(buff_name, {})
+	data["value"] = int(data.get("value", 0)) + value
+	data["duration"] = maxi(int(data.get("duration", 0)), duration)
+	buffs[buff_name] = data
+
+func _get_buff_value(buff_name: String) -> int:
+	if not buffs.has(buff_name):
+		return 0
+	var data = buffs[buff_name]
+	if data is Dictionary:
+		return int(data.get("value", 0))
+	return int(data)
+
+func _tick_dictionary(container: Dictionary) -> void:
+	var expired: Array[String] = []
+	for key in container.keys():
+		var value = container[key]
+		if not (value is Dictionary):
+			continue
+		var data: Dictionary = value
+		data["duration"] = int(data.get("duration", 1)) - 1
+		if int(data["duration"]) <= 0:
+			expired.append(str(key))
+		else:
+			container[key] = data
+	for key in expired:
+		container.erase(key)
+
+func show_intent() -> void:
+	if actions.is_empty():
+		intent_changed.emit("Атака (Физ.): 5")
+		return
+
+	var next_action: String = actions[action_index % actions.size()]
+	var parts: PackedStringArray = next_action.split(":", false, 1)
+	if parts.size() < 2:
+		intent_changed.emit("Неизвестное действие")
+		return
+
+	var raw_action_type: String = parts[0].strip_edges()
+	var action_type: String = raw_action_type
+	var type_text: String = "Физ."
+
+	if " " in raw_action_type:
+		var sub_parts: PackedStringArray = raw_action_type.split(" ", false)
+		action_type = sub_parts[0]
+		if sub_parts.size() > 1:
+			match sub_parts[1]:
+				"-m": type_text = "Маг."
+				"-p": type_text = "Псих."
+				_: type_text = "Физ."
+
+	var text: String
+	match action_type:
+		"attack":
+			text = "Атака (%s): %d" % [type_text, int(parts[1]) + _get_buff_value("rage")]
+		"defend": text = "Защита: " + parts[1]
+		"summon": text = "Призыв миньона"
+		"debuff": text = "Ослабление игрока: %s х." % parts[1]
+		"self_buff": text = "Концентрация: атака +%s" % parts[1]
+		"buff_minions": text = "Усиление миньонов: блок +%s" % parts[1]
+		_: text = action_type
+
+	var status_parts: Array[String] = []
+	var poison_stacks: int = get_status_stacks("poison")
+	if poison_stacks > 0:
+		status_parts.append("Яд x%d" % poison_stacks)
+	if has_status("on_fire"):
+		status_parts.append("Горение")
+	if not status_parts.is_empty():
+		text += "\n" + " | ".join(status_parts)
+	intent_changed.emit(text)
+
+func emit_signals() -> void:
+	hp_changed.emit(hp, max_hp)
+	block_changed.emit(block)
+
+func _on_hp_changed(curent: int, maximum_hp: int) -> void:
+	hp_bar.max_value = maximum_hp
+	hp_bar.value = curent
+	if hp_text:
+		hp_text.text = "%d / %d" % [curent, maximum_hp]
+
+func _on_block_changed(amount: int) -> void:
+	block_text.text = str(amount)
+	block_text.visible = amount > 0
+
+func _on_on_intent_changed(text: String) -> void:
+	intent_text.text = text
+
+func set_highlight(active: bool) -> void:
+	var my_sprite: Sprite2D = $EnemySprite
+	if not my_sprite:
+		return
+	if active:
+		if not my_sprite.material is ShaderMaterial:
+			var shader_res = load("res://src/shaders/outline.gdshader") as Shader
+			if shader_res:
+				var shader_mat := ShaderMaterial.new()
+				shader_mat.shader = shader_res
+				my_sprite.material = shader_mat
+		if my_sprite.material is ShaderMaterial:
+			my_sprite.material.set_shader_parameter("width", 2.0)
+			my_sprite.material.set_shader_parameter("outline_color", Color(0.804, 0.731, 0.318, 1.0))
+	else:
+		if my_sprite.material is ShaderMaterial:
+			my_sprite.material.set_shader_parameter("width", 0.0)

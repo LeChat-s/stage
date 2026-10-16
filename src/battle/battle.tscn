@@ -30,7 +30,7 @@ enemy_catalog = ExtResource("2_i4wed")
 layer = -10
 
 [node name="PlayerInBattle" parent="." unique_id=270825366 instance=ExtResource("1_ewtd0")]
-position = Vector2(319, 429)
+position = Vector2(320, 448)
 
 [node name="Enemys" type="Node2D" parent="." unique_id=809332175]
 z_index = 10
@@ -38,13 +38,13 @@ z_index = 10
 [node name="Marker" type="Node2D" parent="." unique_id=1963761707]
 
 [node name="Marker2D" type="Marker2D" parent="Marker" unique_id=1070361101]
-position = Vector2(847, 429)
+position = Vector2(832, 448)
 
 [node name="Marker2D2" type="Marker2D" parent="Marker" unique_id=1551218520]
-position = Vector2(910, 500)
+position = Vector2(960, 448)
 
 [node name="Marker2D3" type="Marker2D" parent="Marker" unique_id=67665318]
-position = Vector2(1003, 425)
+position = Vector2(1088, 448)
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1180394887]
 

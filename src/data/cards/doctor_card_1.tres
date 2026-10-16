@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://bncihahktu5c7"]
+
+[ext_resource type="Script" uid="uid://c602y2ab5ly3b" path="res://src/data/cards/cards_data.gd" id="1_e51x6"]
+
+[resource]
+script = ExtResource("1_e51x6")
+id = "doctor_card_1"
+name = "Новая карта: Чумной Доктор"
+type = "skill"
+description = "Описание карты"
+build_id = &"doctor"

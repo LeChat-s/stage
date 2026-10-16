@@ -1,18 +1,23 @@
 [gd_scene format=3 uid="uid://bucgr6pydjimp"]
 
-[ext_resource type="Script" uid="uid://cc7qx40s3it3x" path="res://src/data/cards/card_ui.gd" id="1_md8go"]
-[ext_resource type="Texture2D" uid="uid://dkdc86d82rifb" path="res://assets/card/attack_base.png" id="2_48m6c"]
+[ext_resource type="Script" path="res://src/data/cards/card_ui.gd" id="1_ui"]
+[ext_resource type="Script" path="res://src/data/cards/card_face.gd" id="2_face"]
 
-[node name="Card_UI" type="Control" unique_id=1007518082]
+[node name="Card_UI" type="Control"]
+custom_minimum_size = Vector2(106, 150)
 layout_mode = 3
 anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-script = ExtResource("1_md8go")
+offset_right = 106.0
+offset_bottom = 150.0
+mouse_filter = 0
+texture_filter = 1
+script = ExtResource("1_ui")
 
-[node name="Art" type="TextureRect" parent="." unique_id=1352411248]
+[node name="CardFace" type="Control" parent="."]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 212.0
+offset_bottom = 300.0
 scale = Vector2(0.5, 0.5)
-texture = ExtResource("2_48m6c")
+mouse_filter = 2
+texture_filter = 1
+script = ExtResource("2_face")

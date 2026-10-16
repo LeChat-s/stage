@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bfx2vt1l5mv71" path="res://src/battle/enemy_in_battle.gd" id="1_iyoeq"]
 [ext_resource type="Texture2D" uid="uid://btnqtopfel4dq" path="res://assets/player/attack1.png" id="2_fhwkn"]
 [ext_resource type="FontFile" uid="uid://c35xg7jni7v5p" path="res://assets/fonts/PixeloidSans.ttf" id="2_vm073"]
+[ext_resource type="Script" path="res://src/battle/combat_status_container.gd" id="99_status"]
 [ext_resource type="Texture2D" uid="uid://dupy45wsjnccj" path="res://assets/enemy/mushroom/mushroom.png" id="3_xpvo7"]
 [ext_resource type="Texture2D" uid="uid://ceqy64rwb35gr" path="res://assets/enemy/mushroom/Mushroom-Die.png" id="5_pwttg"]
 
@@ -218,6 +219,31 @@ theme_override_fonts/font = ExtResource("2_vm073")
 horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
+
+[node name="CombatStatus" type="HBoxContainer" parent="HPBar"]
+layout_mode = 0
+offset_left = -2.0
+offset_top = 32.0
+offset_right = 124.0
+offset_bottom = 62.0
+alignment = 1
+theme_override_constants/separation = 3
+script = ExtResource("99_status")
+
+[node name="TurnBadge" type="Label" parent="."]
+visible = false
+offset_left = -34.0
+offset_top = -250.0
+offset_right = 34.0
+offset_bottom = -228.0
+theme_override_colors/font_color = Color(1, 0.86, 0.45, 1)
+theme_override_colors/font_outline_color = Color(0.08, 0.08, 0.1, 1)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("2_vm073")
+theme_override_font_sizes/font_size = 12
+text = "ХОД"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Intent" type="Label" parent="." unique_id=1175957020]
 offset_left = -67.0

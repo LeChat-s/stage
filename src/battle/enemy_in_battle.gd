@@ -12,6 +12,8 @@ signal died
 @onready var intent_text: Label = $Intent
 @onready var hp_text: Label = $HPBar/HPText
 @onready var enemy_sprite: Sprite2D = $EnemySprite
+@onready var status_ui: CombatStatusContainer = $HPBar/CombatStatus
+@onready var turn_badge: Label = $TurnBadge
 
 var hp: int
 var max_hp: int
@@ -25,7 +27,13 @@ var current_enemy_data: EnemyData
 var buffs: Dictionary = {}
 var debuffs: Dictionary = {}
 
+var _base_sprite_scale: Vector2 = Vector2.ONE
+var _turn_focus_tween: Tween = null
+
 func _ready() -> void:
+	if enemy_sprite != null:
+		_base_sprite_scale = enemy_sprite.scale
+
 	var click_zone: Area2D = $Area2D
 	if click_zone:
 		click_zone.input_event.connect(_on_click_zone_input_event)
@@ -49,6 +57,7 @@ func setup(enemy_data: EnemyData) -> void:
 		push_warning("EnemyInBattle: у EnemyData отсутствует sprite.")
 
 	emit_signals()
+	_refresh_combat_status_ui()
 	show_intent()
 
 func resetup(enemy_data: EnemyData) -> void:
@@ -64,6 +73,7 @@ func resetup(enemy_data: EnemyData) -> void:
 		enemy_sprite.visible = true
 
 	emit_signals()
+	_refresh_combat_status_ui()
 	show_intent()
 
 func _on_click_zone_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
@@ -217,6 +227,7 @@ func apply_status(
 	data["damage_per_stack"] = maxi(int(data.get("damage_per_stack", 0)), damage_per_stack)
 	data["damage_type"] = damage_type
 	debuffs[status_id] = data
+	_refresh_combat_status_ui()
 	show_intent()
 
 func apply_debuff(debuff_name: String, duration: int, amount: int = 0) -> void:
@@ -242,6 +253,7 @@ func has_status(status_id: String) -> bool:
 
 func remove_status(status_id: String) -> void:
 	debuffs.erase(status_id)
+	_refresh_combat_status_ui()
 	show_intent()
 
 func extend_status(status_id: String, turns: int) -> void:
@@ -267,6 +279,7 @@ func trigger_status(status_id: String) -> int:
 func tick_statuses_end_turn() -> void:
 	_tick_dictionary(buffs)
 	_tick_dictionary(debuffs)
+	_refresh_combat_status_ui()
 	show_intent()
 
 func _apply_timed_buff(buff_name: String, value: int, duration: int) -> void:
@@ -274,6 +287,7 @@ func _apply_timed_buff(buff_name: String, value: int, duration: int) -> void:
 	data["value"] = int(data.get("value", 0)) + value
 	data["duration"] = maxi(int(data.get("duration", 0)), duration)
 	buffs[buff_name] = data
+	_refresh_combat_status_ui()
 
 func _get_buff_value(buff_name: String) -> int:
 	if not buffs.has(buff_name):
@@ -333,15 +347,63 @@ func show_intent() -> void:
 		"buff_minions": text = "Усиление миньонов: блок +%s" % parts[1]
 		_: text = action_type
 
-	var status_parts: Array[String] = []
-	var poison_stacks: int = get_status_stacks("poison")
-	if poison_stacks > 0:
-		status_parts.append("Яд x%d" % poison_stacks)
-	if has_status("on_fire"):
-		status_parts.append("Горение")
-	if not status_parts.is_empty():
-		text += "\n" + " | ".join(status_parts)
 	intent_changed.emit(text)
+
+func set_turn_active(active: bool) -> void:
+	# Selection outline остаётся независимым и продолжает показывать цель игрока.
+	# Активный ход отмечается масштабом, intent-цветом и z-index.
+	z_index = 5 if active else 0
+	turn_badge.visible = active
+
+	if _turn_focus_tween != null and _turn_focus_tween.is_valid():
+		_turn_focus_tween.kill()
+
+	_turn_focus_tween = create_tween()
+	_turn_focus_tween.set_parallel(true)
+
+	if enemy_sprite != null:
+		var target_scale: Vector2 = _base_sprite_scale * (1.08 if active else 1.0)
+		_turn_focus_tween.tween_property(
+			enemy_sprite,
+			"scale",
+			target_scale,
+			0.12
+		).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+	if intent_text != null:
+		var target_color: Color = Color(1.0, 0.86, 0.45, 1.0) if active else Color.WHITE
+		_turn_focus_tween.tween_property(
+			intent_text,
+			"modulate",
+			target_color,
+			0.12
+		)
+
+
+func _refresh_combat_status_ui() -> void:
+	if status_ui == null: return
+	var entries: Array[Dictionary] = []
+	if buffs.has("rage"):
+		var rage: Dictionary = buffs["rage"]
+		var rv: int = int(rage.get("value", 0))
+		var rd: int = int(rage.get("duration", 0))
+		entries.append({"id":"rage","symbol":"ЯР","color":Color("#c85b62"),"value":"+%d" % rv,"duration":rd,"tooltip":"Ярость\nАтака +%d\nОсталось ходов: %d" % [rv, rd]})
+	for key in debuffs.keys():
+		var sid: String = str(key)
+		var data: Dictionary = debuffs[key]
+		var dur: int = int(data.get("duration", 0))
+		var stacks: int = int(data.get("stacks", data.get("amount", 1)))
+		match sid:
+			"poison":
+				var tick: int = int(data.get("tick_damage", 0)) + int(data.get("damage_per_stack", 0)) * stacks
+				entries.append({"id":sid,"symbol":"ЯД","color":Color("#72a85c"),"value":"x%d" % stacks,"duration":dur,"tooltip":"Яд\nСтаки: %d\nУрон в начале хода: %d\nОсталось ходов: %d" % [stacks,tick,dur]})
+			"on_fire":
+				var dmg: int = int(data.get("tick_damage", 0))
+				entries.append({"id":sid,"symbol":"ОГ","color":Color("#d1764f"),"value":str(dmg) if dmg > 0 else "","duration":dur,"tooltip":"Горение\nУрон в начале хода: %d\nОсталось ходов: %d" % [dmg,dur]})
+			_:
+				entries.append({"id":sid,"symbol":sid.left(2).to_upper(),"color":Color("#8d78a8"),"value":"x%d" % stacks if stacks > 1 else "","duration":dur,"tooltip":"%s\nСтаки: %d\nОсталось ходов: %d" % [sid,stacks,dur]})
+	status_ui.sync(entries)
+
 
 func emit_signals() -> void:
 	hp_changed.emit(hp, max_hp)

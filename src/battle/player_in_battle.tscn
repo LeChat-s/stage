@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://dyjjv8w5ueony" path="res://assets/player/Д13list.png" id="2_os80c"]
 [ext_resource type="FontFile" uid="uid://c35xg7jni7v5p" path="res://assets/fonts/PixeloidSans.ttf" id="2_weow4"]
 [ext_resource type="Script" uid="uid://dctrner31anc5" path="res://src/battle/effect_container.gd" id="3_5cdk3"]
+[ext_resource type="Script" path="res://src/battle/combat_status_container.gd" id="99_status"]
 [ext_resource type="Texture2D" uid="uid://cpxo22mv2k1mh" path="res://assets/player/Д13Magiclist.png" id="5_uv1gr"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mn1mn"]
@@ -198,6 +199,15 @@ offset_right = 142.0
 offset_bottom = 54.0
 script = ExtResource("3_5cdk3")
 metadata/_edit_use_anchors_ = true
+
+[node name="CombatStatus" type="HBoxContainer" parent="HPBar"]
+layout_mode = 0
+offset_left = -2.0
+offset_top = 58.0
+offset_right = 142.0
+offset_bottom = 88.0
+theme_override_constants/separation = 3
+script = ExtResource("99_status")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1398213391]
 texture_filter = 1

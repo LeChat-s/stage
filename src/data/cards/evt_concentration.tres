@@ -9,7 +9,6 @@ id = "evt_concentration"
 name = "Концентрация"
 cost = 0
 type = "event"
-build_id = &"magical_girl"
 target_type = 1
 effects = Array[Dictionary]([{
 "id": "gain_charge"
@@ -19,5 +18,6 @@ effects = Array[Dictionary]([{
 "id": "exile_on_turn_end"
 }])
 description = "Дает +1 к заряду и добирает 1 карту. После розыгрыша не попадает в сброс."
+build_id = &"magical_girl"
 artwork = ExtResource("1_5457k")
 metadata/_custom_type_script = "uid://c602y2ab5ly3b"
